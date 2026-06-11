@@ -31,6 +31,8 @@ npm ci
 npm run build
 ```
 
+The workflow uses Node 22 because Astro 6 requires Node `>=22.12.0`.
+
 Then it uploads `dist` through `actions/upload-pages-artifact` and deploys with `actions/deploy-pages`.
 
 ## Astro Base Path

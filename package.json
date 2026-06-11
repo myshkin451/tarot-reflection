@@ -10,7 +10,7 @@
     "url": "https://github.com/myshkin451/tarot-reflection.git"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12.0"
   },
   "type": "module",
   "scripts": {
