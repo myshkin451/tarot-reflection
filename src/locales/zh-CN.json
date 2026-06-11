@@ -1,0 +1,52 @@
+{
+  "nav": {
+    "journal": "日志",
+    "cards": "牌义",
+    "language": "语言"
+  },
+  "hero": {
+    "title": "Arcana Mirror",
+    "subtitle": "一个克制、现代、面向自我反思的塔罗工具：抽牌、结构化解释，并生成可复制给 AI 的提示词。",
+    "start": "开始抽牌"
+  },
+  "flow": {
+    "question": "问题",
+    "questionPlaceholder": "你想更清楚地理解什么？",
+    "spread": "牌阵",
+    "reversed": "允许逆位",
+    "draw": "抽牌",
+    "redraw": "重新抽牌",
+    "shuffle": "洗牌",
+    "summary": "整体摘要",
+    "noReading": "输入一个问题或选择牌阵开始。"
+  },
+  "result": {
+    "keywords": "关键词",
+    "meaning": "含义",
+    "reflection": "反思问题",
+    "advice": "建议",
+    "prompt": "AI 提示词生成器",
+    "copy": "复制",
+    "download": "下载 .md",
+    "compact": "紧凑版",
+    "deep": "深度分析",
+    "save": "保存到日志",
+    "saved": "已保存",
+    "exportReading": "导出解读"
+  },
+  "journal": {
+    "title": "日志",
+    "empty": "保存的抽牌会显示在这里。",
+    "delete": "删除",
+    "exportJson": "导出 JSON",
+    "exportMarkdown": "导出 Markdown",
+    "notes": "笔记",
+    "aiResponse": "粘贴的 AI 回复"
+  },
+  "cards": {
+    "title": "牌义",
+    "subtitle": "原创的简洁牌义，用于反思，不复制商业塔罗网站内容。",
+    "upright": "正位",
+    "reversed": "逆位"
+  }
+}

@@ -1,0 +1,92 @@
+# Arcana Mirror
+
+Arcana Mirror is a static-first tarot reflection app. It draws cards, explains the reading in a structured way, saves local journal entries, and generates high-quality prompts that can be copied into ChatGPT, Claude, Gemini, DeepSeek, or another AI tool.
+
+It is not positioned as deterministic fortune telling. The product goal is quieter and more useful: help a person clarify a question, notice patterns, write reflections, and prepare context for deeper AI-assisted interpretation.
+
+## Live Site
+
+After deployment, the default GitHub Pages URL is:
+
+```text
+https://myshkin451.github.io/tarot-reflection/
+```
+
+## Features
+
+- One-card, three-card, and five-card spreads
+- Optional reversed cards
+- No duplicate cards in one reading
+- 78-card structured tarot dataset
+- English and Simplified Chinese UI
+- CSS/SVG-style card faces, no copyrighted tarot image dependency
+- AI Prompt Builder with compact and deep-analysis prompts
+- Copy prompt and download Markdown
+- Local journal powered by `localStorage`
+- Export saved readings as JSON or Markdown
+- Static GitHub Pages deployment through GitHub Actions
+
+## Privacy And Safety
+
+- No backend in v1
+- No login or account system
+- No browser-side AI API calls
+- No API keys or secrets in the frontend
+- Reading history stays in the user's browser storage
+- Prompts instruct AI tools not to present readings as fixed fate and not to give medical, legal, investment, or financial certainty
+
+## Tech Stack
+
+- Astro 6
+- Vue 3
+- TypeScript
+- Tailwind CSS through PostCSS
+- Vitest
+- GitHub Actions + GitHub Pages
+
+## Local Development
+
+```bash
+npm install
+npm run dev
+```
+
+Useful commands:
+
+```bash
+npm run test
+npm run build
+npm run preview
+```
+
+## Project Structure
+
+```text
+src/
+  components/tarot/   Vue UI components
+  data/               tarot card and spread data
+  lib/                draw logic, prompt builder, storage, i18n helpers
+  locales/            UI copy
+  pages/              Astro routes
+  styles/             global CSS and design tokens
+  test/               Vitest tests
+docs/                 product, architecture, deployment, content, roadmap docs
+```
+
+## Documentation
+
+- [Product Spec](docs/PRODUCT_SPEC.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Deployment](docs/DEPLOYMENT.md)
+- [Content And Safety](docs/CONTENT_AND_SAFETY.md)
+- [Roadmap](docs/ROADMAP.md)
+
+## Deployment
+
+The repository includes `.github/workflows/deploy.yml`. Push to `main`, enable GitHub Pages with the GitHub Actions source, and the workflow will build and publish `dist`.
+
+The Astro config automatically sets the correct base path when `GITHUB_PAGES=true`, so the app works under `/tarot-reflection/` on GitHub Pages.
+
+## License
+
+Code is released under the MIT License. The written tarot meanings in `src/data/tarotCards.ts` are original concise project content; do not copy commercial tarot site text into this dataset.

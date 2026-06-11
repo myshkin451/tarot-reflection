@@ -1,0 +1,52 @@
+{
+  "nav": {
+    "journal": "Journal",
+    "cards": "Cards",
+    "language": "Language"
+  },
+  "hero": {
+    "title": "Arcana Mirror",
+    "subtitle": "A calm tarot reflection tool for clearer questions, structured readings, and AI-ready prompts.",
+    "start": "Start a reading"
+  },
+  "flow": {
+    "question": "Question",
+    "questionPlaceholder": "What do you want to understand more clearly?",
+    "spread": "Spread",
+    "reversed": "Allow reversed cards",
+    "draw": "Draw cards",
+    "redraw": "Draw again",
+    "shuffle": "Shuffle the deck",
+    "summary": "Reading summary",
+    "noReading": "Enter a question or choose a spread to begin."
+  },
+  "result": {
+    "keywords": "Keywords",
+    "meaning": "Meaning",
+    "reflection": "Reflection question",
+    "advice": "Advice",
+    "prompt": "AI Prompt Builder",
+    "copy": "Copy",
+    "download": "Download .md",
+    "compact": "Compact",
+    "deep": "Deep analysis",
+    "save": "Save to journal",
+    "saved": "Saved",
+    "exportReading": "Export reading"
+  },
+  "journal": {
+    "title": "Journal",
+    "empty": "Saved readings will appear here.",
+    "delete": "Delete",
+    "exportJson": "Export JSON",
+    "exportMarkdown": "Export Markdown",
+    "notes": "Notes",
+    "aiResponse": "Pasted AI response"
+  },
+  "cards": {
+    "title": "Card meanings",
+    "subtitle": "Original concise meanings for reflection, not copied from commercial tarot sites.",
+    "upright": "Upright",
+    "reversed": "Reversed"
+  }
+}
