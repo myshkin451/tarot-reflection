@@ -7,6 +7,7 @@
 - Added shuffle and reveal motion to make the draw flow feel more intentional.
 - Updated AI prompts to include local interpretation context before external model analysis.
 - Added DeepSeek/backend integration planning while keeping API keys out of the static frontend.
+- Added next-phase visual, deck, motion, and Cloudflare Worker direction with a generated concept reference.
 
 ## 0.1.0
 

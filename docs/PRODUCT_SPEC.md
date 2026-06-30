@@ -6,6 +6,8 @@ Arcana Mirror is a calm tarot-based self-reflection tool. It should feel like a 
 
 The first version is intentionally static. It does not need an AI backend to be useful because its core value is giving a local first-pass interpretation, then packaging the user's question, cards, positions, keywords, and interpretation requirements into a reusable prompt.
 
+The next version should add direct AI interpretation without turning the app into a heavy account product. The intended flow is still simple: ask, draw, read the local meaning, then optionally generate a deeper AI reading.
+
 ## Audience
 
 - People who use tarot as a reflective or journaling practice
@@ -27,6 +29,21 @@ The first version is intentionally static. It does not need an AI backend to be 
 - Export journal entries as JSON or Markdown
 - Browse all 78 card meanings
 
+## V1.2 Scope
+
+- Replace abstract card faces with a more tactile deck presentation
+- Add an original card back design and richer major-arcana visual language
+- Make the draw flow feel physical: shuffle, fan, deal, flip, and settle
+- Keep the result layout focused on cards plus interpretation, not product explanation
+
+## V1.3 Scope
+
+- Add a server-side AI interpretation endpoint
+- Use DeepSeek as the first provider
+- Keep frontend hosting static unless the personal website migration happens first
+- Limit each IP to 20 AI readings per day
+- Avoid login, payment, account state, and admin dashboards in the MVP
+
 ## Non-Goals In V1
 
 - No backend
@@ -42,9 +59,12 @@ The first version is intentionally static. It does not need an AI backend to be 
 - Warm parchment result surface
 - Antique-gold accent lines
 - Serif display typography with restrained UI text
-- Minimal symbolic card faces generated with CSS/SVG-like layout
-- Smooth but quiet interactions
+- Original Arcana Mirror deck language, starting with card backs and major-arcana samples
+- Tactile paper, engraved linework, quiet texture, and visible card depth
+- More dramatic shuffle/deal/flip motion when drawing cards
 - Responsive mobile-first layout
+
+Avoid developer-facing product language in the UI. The interface should say "draw", "read", "generate AI reading", "save", and "ask again"; it should not explain that the design is restrained, modern, static-first, or structurally reflective.
 
 ## Acceptance Criteria
 

@@ -82,6 +82,7 @@ docs/                 product, architecture, deployment, content, roadmap docs
 - [Deployment](docs/DEPLOYMENT.md)
 - [Content And Safety](docs/CONTENT_AND_SAFETY.md)
 - [AI Backend Plan](docs/AI_BACKEND.md)
+- [Next Phase Direction](docs/NEXT_PHASE_DIRECTION.md)
 - [Roadmap](docs/ROADMAP.md)
 
 ## Deployment

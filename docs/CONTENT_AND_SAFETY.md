@@ -12,6 +12,8 @@ V1 does not use Rider-Waite-Smith scans or third-party deck art. Card faces are 
 
 This avoids deck image licensing ambiguity and gives the product a more distinct visual identity.
 
+The next visual pass should move toward an original Arcana Mirror deck. Use generated or hand-curated original art for the card back and major arcana samples first; do not copy commercial decks or modern recolors of traditional tarot images.
+
 ## Interpretation Style
 
 The local first-pass interpretation should work before any AI request. It should use reflective language:
@@ -42,4 +44,4 @@ Prompt Builder includes a safety boundary:
 
 Journal entries stay in the browser through `localStorage`. There is no remote database, analytics system, account login, or server-side reading storage in v1.
 
-If a future backend is added, the privacy model should be updated before deployment. AI requests should be optional and should not replace the local interpretation fallback.
+If a future backend is added, it should remain no-login and AI requests should be optional. The MVP should not add a user database or long-term raw-question storage. UI copy should stay natural and lightweight rather than adding a large privacy explanation wall.

@@ -16,16 +16,24 @@ Do not put `DEEPSEEK_API_KEY` or any provider key in browser code. GitHub Pages 
 
 ## Recommended MVP Architecture
 
-Keep GitHub Pages for the frontend and add one small backend endpoint:
+Keep GitHub Pages for the frontend and add one small backend endpoint. The fastest current path is a Cloudflare Worker, because the project only needs a thin model proxy and a daily IP counter. Vercel remains a good option if the whole app is later moved to a Vercel-hosted personal site.
 
 ```text
 POST /api/tarot/analyze
 ```
 
-Good hosting options:
+Preferred shape:
 
-- Cloudflare Worker
-- Vercel Function
+```text
+GitHub Pages frontend
+  -> Cloudflare Worker
+  -> DeepSeek API
+  -> KV or D1 rate-limit counter
+```
+
+Fallback hosting options:
+
+- Vercel Function, especially if the whole Astro app moves to Vercel
 - Netlify Function
 - A small server under the owner's control
 
@@ -49,13 +57,14 @@ The endpoint returns:
 ## Controls Needed Before Launch
 
 - Store provider keys only in server environment variables
-- Rate limit by IP or anonymous session
+- Rate limit by IP, default 20 AI readings per IP per day
 - Set a daily owner budget cap
 - Limit request body size
 - Limit model output tokens
 - Add timeout and retry behavior
 - Keep a local interpretation fallback in the UI
-- Avoid storing raw user questions unless the user explicitly opts in
+- Avoid long-term storage of raw user questions in the MVP
+- Keep UI copy natural; do not overexplain backend mechanics in the product surface
 
 ## DeepSeek Fit
 
@@ -68,3 +77,14 @@ Recommended launch sequence:
 3. Add an optional "Generate deeper reading" button after the local result.
 4. Show the AI response under the local reading, never instead of it.
 5. Keep copy/download/export working even when AI fails.
+
+## Current Direction Snapshot
+
+Checked on 2026-06-30:
+
+- Cloudflare Workers Free includes 100,000 Worker requests per day, which is far above the expected traffic for a 20 requests/IP/day tarot endpoint.
+- Vercel Hobby can host the whole app and functions, but is more useful when the entire personal website moves there.
+- DeepSeek should be used through a server-side key only.
+- The first AI endpoint should not require login or a database-backed user model.
+
+See [Next Phase Direction](NEXT_PHASE_DIRECTION.md) for the current product, visual, hosting, and cost decisions.
