@@ -12,7 +12,7 @@
 
 ## V1.1 Content Polish
 
-- Add local first-pass reading summary logic
+- Add local card reading summary logic
 - Add position-specific interpretation helpers
 - Show advice and shadow notes in the card library
 - Polish card meanings so local reading stays useful without AI

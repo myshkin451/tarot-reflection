@@ -14,15 +14,15 @@ This avoids deck image licensing ambiguity and gives the product a more distinct
 
 The next visual pass should move toward an original Arcana Mirror deck. Use generated or hand-curated original art for the card back and major arcana samples first; do not copy commercial decks or modern recolors of traditional tarot images.
 
-## Interpretation Style
+## Reading Style
 
-The local first-pass interpretation should work before any AI request. It should use reflective language:
+The local card reading should work before any AI request. It should use clear tarot-reading language:
 
 - "may suggest"
-- "invites reflection"
 - "possible action"
 - "pattern"
-- "question"
+- "landing point"
+- "watch for"
 
 It should avoid deterministic language:
 
@@ -37,11 +37,12 @@ Prompt Builder includes a safety boundary:
 
 - Do not present the reading as fixed fate.
 - Do not give medical, legal, investment, or financial certainty.
-- Focus on reflection, perspective, and possible actions.
-- Include the local first-pass interpretation as context, but ask the model to keep it provisional rather than absolute.
+- Read the cards directly, without deterministic claims.
+- Include the local card reading as context, but ask the model to keep it provisional rather than absolute.
+- Do not end with a separate question list or journaling prompt section.
 
 ## Privacy
 
-Journal entries stay in the browser through `localStorage`. There is no remote database, analytics system, account login, or server-side reading storage in v1.
+Journal entries stay in the browser through `localStorage`.
 
-If a future backend is added, it should remain no-login and AI requests should be optional. The MVP should not add a user database or long-term raw-question storage. UI copy should stay natural and lightweight rather than adding a large privacy explanation wall.
+The optional AI backend remains no-login. Successful AI readings are stored in Cloudflare D1 so the owner can inspect generated results and debug the service. UI copy should stay natural and lightweight rather than adding a large privacy explanation wall.

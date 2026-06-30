@@ -75,7 +75,7 @@ Avoid developer-facing product language in the UI. The interface should say "dra
 - GitHub Pages workflow can publish the static site
 - The app can draw one, three, and five card readings
 - Prompt Builder includes the question, spread, every drawn card, position, orientation, keywords, meanings, and safety boundary
-- Prompt Builder includes the local first-pass interpretation so external AI starts from richer context
+- Prompt Builder includes the local card reading so external AI starts from richer context
 - Journal can save and display readings locally
 - `/cards` displays all 78 cards
 - English and Simplified Chinese UI are both usable

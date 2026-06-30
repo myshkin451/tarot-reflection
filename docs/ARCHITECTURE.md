@@ -35,7 +35,7 @@ Vue reading result
 - `src/data/tarotCards.ts`: full 78-card dataset
 - `src/data/spreads.ts`: supported spreads and positions
 - `src/lib/draw.ts`: random drawing logic
-- `src/lib/interpretation.ts`: local first-pass reading interpretation
+- `src/lib/interpretation.ts`: local card reading interpretation
 - `src/lib/promptBuilder.ts`: prompt and Markdown export logic
 - `src/lib/aiReading.ts`: optional AI reading request payload and client
 - `src/lib/storage.ts`: localStorage wrapper
