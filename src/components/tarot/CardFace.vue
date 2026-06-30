@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import type { Locale, TarotCard } from "@/lib/types";
+import { getDeckCardAsset } from "@/lib/deckAssets";
 import { list, text } from "@/lib/locale";
 
 const props = defineProps<{
@@ -11,32 +13,61 @@ const props = defineProps<{
   reveal?: boolean;
   revealIndex?: number;
 }>();
+
+const cardAsset = computed(() => getDeckCardAsset(props.card.id));
+const cardAssetAlt = computed(() => {
+  const asset = cardAsset.value;
+
+  if (!asset) {
+    return text(props.card.name, props.locale);
+  }
+
+  return props.locale === "zh-CN" ? asset.alt.zh : asset.alt.en;
+});
 </script>
 
 <template>
   <article
     class="tarot-card"
-    :class="{ reversed: orientation === 'reversed', compact, reveal }"
+    :class="{ reversed: orientation === 'reversed', compact, reveal, 'has-art': cardAsset }"
     :style="reveal ? { '--reveal-delay': `${(revealIndex ?? 0) * 120}ms` } : undefined"
   >
     <div class="card-frame">
-      <div class="card-corner">{{ card.symbol }}</div>
-      <div class="card-orbit" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </div>
-      <div class="card-sigil">{{ card.symbol }}</div>
-      <div class="card-name">{{ text(card.name, locale) }}</div>
-      <div v-if="position" class="card-position">{{ position }}</div>
-      <div v-if="orientation" class="card-orientation">
-        {{ orientation === "reversed" ? (locale === "zh-CN" ? "逆位" : "Reversed") : (locale === "zh-CN" ? "正位" : "Upright") }}
-      </div>
-      <div v-if="!compact" class="card-keywords">
-        <span v-for="keyword in list(card.keywords[orientation || 'upright'], locale).slice(0, 3)" :key="keyword">
-          {{ keyword }}
-        </span>
-      </div>
+      <template v-if="cardAsset">
+        <img class="card-art" :src="cardAsset.image" :alt="cardAssetAlt" loading="lazy" decoding="async" />
+        <div class="card-art-glaze" aria-hidden="true" />
+        <div class="card-title-plate">
+          <div class="card-name">{{ text(card.name, locale) }}</div>
+          <div v-if="position" class="card-position">{{ position }}</div>
+          <div v-if="orientation" class="card-orientation">
+            {{ orientation === "reversed" ? (locale === "zh-CN" ? "逆位" : "Reversed") : (locale === "zh-CN" ? "正位" : "Upright") }}
+          </div>
+          <div v-if="!compact" class="card-keywords">
+            <span v-for="keyword in list(card.keywords[orientation || 'upright'], locale).slice(0, 3)" :key="keyword">
+              {{ keyword }}
+            </span>
+          </div>
+        </div>
+      </template>
+      <template v-else>
+        <div class="card-corner">{{ card.symbol }}</div>
+        <div class="card-orbit" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+        <div class="card-sigil">{{ card.symbol }}</div>
+        <div class="card-name">{{ text(card.name, locale) }}</div>
+        <div v-if="position" class="card-position">{{ position }}</div>
+        <div v-if="orientation" class="card-orientation">
+          {{ orientation === "reversed" ? (locale === "zh-CN" ? "逆位" : "Reversed") : (locale === "zh-CN" ? "正位" : "Upright") }}
+        </div>
+        <div v-if="!compact" class="card-keywords">
+          <span v-for="keyword in list(card.keywords[orientation || 'upright'], locale).slice(0, 3)" :key="keyword">
+            {{ keyword }}
+          </span>
+        </div>
+      </template>
     </div>
   </article>
 </template>
@@ -75,6 +106,12 @@ const props = defineProps<{
     box-shadow 220ms ease;
 }
 
+.tarot-card.has-art .card-frame {
+  display: block;
+  padding: 0;
+  background: #0b0a09;
+}
+
 .tarot-card:hover .card-frame {
   border-color: rgba(248, 240, 222, 0.86);
   box-shadow: 0 28px 80px rgba(0, 0, 0, 0.5);
@@ -91,6 +128,45 @@ const props = defineProps<{
     radial-gradient(circle at 50% 68%, rgba(111, 136, 150, 0.25), transparent 32%),
     linear-gradient(25deg, rgba(239, 226, 199, 0.11), rgba(239, 226, 199, 0.03)),
     #111012;
+}
+
+.card-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.card-art-glaze {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(11, 10, 9, 0.02), transparent 42%, rgba(11, 10, 9, 0.2)),
+    radial-gradient(circle at 50% 8%, rgba(248, 240, 222, 0.08), transparent 28%);
+  pointer-events: none;
+}
+
+.card-title-plate {
+  position: absolute;
+  z-index: 2;
+  right: clamp(18px, 8%, 28px);
+  bottom: clamp(18px, 6.5%, 34px);
+  left: clamp(18px, 8%, 28px);
+  display: grid;
+  gap: 7px;
+  padding: 9px 10px 10px;
+  color: #21160d;
+  text-align: center;
+}
+
+.tarot-card.compact .card-title-plate {
+  right: clamp(11px, 9%, 18px);
+  bottom: clamp(11px, 6%, 18px);
+  left: clamp(11px, 9%, 18px);
+  gap: 3px;
+  padding: 5px 6px;
 }
 
 .card-corner {
@@ -148,10 +224,28 @@ const props = defineProps<{
   font: 600 20px/1.05 var(--font-display);
 }
 
+.tarot-card.has-art .card-name {
+  margin-top: 0;
+  color: #21160d;
+  font-size: clamp(16px, 2.6vw, 24px);
+  text-shadow: 0 1px 0 rgba(248, 240, 222, 0.36);
+}
+
+.tarot-card.compact.has-art .card-name {
+  font-size: clamp(12px, 2vw, 15px);
+  line-height: 1.05;
+}
+
 .card-position {
   margin-top: 8px;
   color: rgba(248, 240, 222, 0.64);
   font: 600 12px/1.2 var(--font-ui);
+}
+
+.tarot-card.has-art .card-position {
+  margin-top: 0;
+  color: rgba(33, 22, 13, 0.72);
+  font-size: 11px;
 }
 
 .card-orientation {
@@ -159,6 +253,12 @@ const props = defineProps<{
   color: rgba(216, 179, 111, 0.86);
   font: 600 11px/1 var(--font-ui);
   text-transform: uppercase;
+}
+
+.tarot-card.has-art .card-orientation {
+  margin-top: 0;
+  color: rgba(117, 78, 29, 0.92);
+  font-size: 10px;
 }
 
 .card-keywords {
@@ -175,6 +275,17 @@ const props = defineProps<{
   padding-top: 5px;
   color: rgba(248, 240, 222, 0.68);
   font: 500 11px/1 var(--font-ui);
+}
+
+.tarot-card.has-art .card-keywords {
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.tarot-card.has-art .card-keywords span {
+  border-top-color: rgba(117, 78, 29, 0.32);
+  color: rgba(33, 22, 13, 0.7);
+  font-size: 10px;
 }
 
 @keyframes card-deal {

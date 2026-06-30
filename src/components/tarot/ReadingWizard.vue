@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { tarotCards } from "@/data/tarotCards";
 import { getSpread, spreads } from "@/data/spreads";
+import { getDeckBackAsset } from "@/lib/deckAssets";
 import { drawCards } from "@/lib/draw";
 import { sitePath } from "@/lib/paths";
 import { upsertReading } from "@/lib/storage";
@@ -24,6 +25,7 @@ const saved = ref(false);
 const journalVersion = ref(0);
 const previewCards = tarotCards.slice(0, 3);
 const shuffleCards = Array.from({ length: 7 }, (_, index) => index);
+const deckBack = getDeckBackAsset();
 let drawToken = 0;
 
 const selectedSpread = computed(() => getSpread(selectedSpreadId.value));
@@ -174,7 +176,8 @@ onBeforeUnmount(() => {
                     '--card-angle-alt': `${(index - 3) * -10}deg`,
                     '--card-x': `${(index - 3) * 22}px`,
                     '--card-y': `${(index - 3) * 4}px`,
-                    '--card-delay': `${index * -70}ms`
+                    '--card-delay': `${index * -70}ms`,
+                    '--deck-back-image': `url(${deckBack.image})`
                   }"
                 />
               </div>
@@ -450,9 +453,11 @@ input[type="checkbox"] {
   aspect-ratio: 2 / 3.18;
   border: 1px solid rgba(216, 179, 111, 0.72);
   background:
-    linear-gradient(135deg, transparent 44%, rgba(216, 179, 111, 0.25) 45%, rgba(216, 179, 111, 0.25) 55%, transparent 56%),
-    radial-gradient(circle at 50% 42%, rgba(216, 179, 111, 0.26), transparent 34%),
+    linear-gradient(180deg, rgba(11, 10, 9, 0.05), rgba(11, 10, 9, 0.18)),
+    var(--deck-back-image),
     #111012;
+  background-position: center;
+  background-size: cover;
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.38);
   transform: translate(-50%, -50%) rotate(var(--card-angle));
   animation: shuffle-card 860ms cubic-bezier(0.22, 0.88, 0.2, 1) infinite;

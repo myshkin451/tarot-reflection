@@ -9,6 +9,7 @@
 - Added DeepSeek/backend integration planning while keeping API keys out of the static frontend.
 - Added next-phase visual, deck, motion, and Cloudflare Worker direction with a generated concept reference.
 - Added optional Cloudflare Worker AI endpoint, D1 reading logs, IP daily limits, and frontend AI reading client.
+- Added the first Arcana Mirror Deck assets: formal card back, The Fool, The Magician, and The High Priestess samples with a deck manifest and image-aware card rendering.
 
 ## 0.1.0
 

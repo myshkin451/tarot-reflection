@@ -1,0 +1,67 @@
+{
+  "id": "arcana-mirror",
+  "name": "Arcana Mirror Deck",
+  "version": "0.1.0",
+  "stage": "phase-1-major-samples",
+  "generatedAt": "2026-06-30",
+  "generator": "Codex built-in image_gen",
+  "dimensions": {
+    "width": 1000,
+    "height": 1590,
+    "format": "webp"
+  },
+  "style": [
+    "ink black and antique gold",
+    "dark card-table atmosphere",
+    "tactile paper stock",
+    "engraved linework",
+    "restrained original occult symbolism"
+  ],
+  "constraints": [
+    "No embedded card-name text",
+    "No letters, numbers, or roman numerals in the artwork",
+    "Frontend overlays all card labels",
+    "Do not copy Rider-Waite-Smith or commercial tarot decks"
+  ],
+  "cardBack": {
+    "id": "card-back",
+    "src": "./card-back.webp",
+    "alt": {
+      "en": "Arcana Mirror black and antique-gold card back with an oval mirror and celestial engraving.",
+      "zh": "Arcana Mirror 黑金牌背，中央为椭圆镜面与星图雕版纹样。"
+    },
+    "promptFocus": "Symmetric black-and-antique-gold card back with oval mirror, celestial compass lines, lunar phases, and worn paper grain."
+  },
+  "cards": {
+    "the-fool": {
+      "id": "the-fool",
+      "src": "./cards/the-fool.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The Fool as a young wanderer approaching a mirror-like dawn across a broken stone causeway.",
+        "zh": "愚者是一位走向镜面晨光的旅人，脚下是断裂的黑石长路。"
+      },
+      "promptFocus": "Threshold, trust, beginning, mirror-like dawn, broken black stone causeway."
+    },
+    "the-magician": {
+      "id": "the-magician",
+      "src": "./cards/the-magician.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The Magician as a focused ritual artisan arranging elemental tools at a dark worktable.",
+        "zh": "魔术师是一位专注的仪式工匠，在暗色桌面上排列四种元素工具。"
+      },
+      "promptFocus": "Agency, skill, focus, ritual artisan, elemental tools, dark worktable."
+    },
+    "the-high-priestess": {
+      "id": "the-high-priestess",
+      "src": "./cards/the-high-priestess.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The High Priestess in a moonlit sanctuary with plain pillars, a closed book, and an obsidian mirror-pool.",
+        "zh": "女祭司立于月光圣所，身侧是素净石柱，怀中抱着闭合的书，前方有黑曜石镜池。"
+      },
+      "promptFocus": "Intuition, silence, moonlit sanctuary, closed blank book, obsidian mirror-pool."
+    }
+  }
+}

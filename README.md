@@ -20,7 +20,7 @@ https://myshkin451.github.io/tarot-reflection/
 - 78-card structured tarot dataset with upright, reversed, advice, and shadow notes
 - Local card reading before any AI step
 - English and Simplified Chinese UI
-- CSS/SVG-style card faces, no copyrighted tarot image dependency
+- Original Arcana Mirror Deck sample assets with CSS card fallback for unfinished cards
 - Shuffle and reveal motion for the draw flow
 - AI Prompt Builder with compact and deep-analysis prompts
 - Optional Cloudflare Worker + DeepSeek direct AI reading flow
@@ -67,6 +67,7 @@ npm run preview
 
 ```text
 src/
+  assets/decks/      original deck artwork and manifests
   components/tarot/   Vue UI components
   data/               tarot card and spread data
   lib/                draw logic, prompt builder, storage, i18n helpers
