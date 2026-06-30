@@ -653,7 +653,7 @@ function makeMinor(suit: SuitSeed, rank: RankSeed): TarotCard {
       }
     },
     advice: {
-      en: `Let ${suit.action.en}.`,
+      en: `The useful move is to ${suit.action.en}.`,
       zh: `请${suit.action.zh}。`
     },
     shadow: suit.shadow,
