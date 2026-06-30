@@ -71,3 +71,53 @@ After deployment:
 3. Copy a prompt.
 4. Save a reading.
 5. Open `/cards` and confirm all 78 cards render.
+
+## Optional AI Worker
+
+The direct AI reading feature is served by a Cloudflare Worker. It is optional: if the frontend build does not receive `PUBLIC_TAROT_AI_ENDPOINT`, the AI section stays hidden and the static app continues to work.
+
+First-time Worker setup:
+
+```bash
+npx wrangler login
+npx wrangler d1 create tarot_reflection_readings
+```
+
+Copy the returned `database_id` into `wrangler.toml`, replacing:
+
+```text
+replace-with-cloudflare-d1-database-id
+```
+
+Apply the D1 migration to the remote database:
+
+```bash
+npx wrangler d1 migrations apply tarot_reflection_readings --remote
+```
+
+Set secrets. Paste the values into the terminal prompts, not into source files:
+
+```bash
+npx wrangler secret put DEEPSEEK_API_KEY
+npx wrangler secret put IP_HASH_SALT
+```
+
+Deploy the Worker:
+
+```bash
+npx wrangler deploy
+```
+
+Set the GitHub Pages build variable to the Worker endpoint:
+
+```bash
+gh variable set PUBLIC_TAROT_AI_ENDPOINT --body "https://tarot-reflection-api.<your-workers-subdomain>.workers.dev/api/tarot/analyze"
+```
+
+Then rerun the Pages workflow or push a new commit.
+
+To inspect recent AI readings:
+
+```bash
+npx wrangler d1 execute tarot_reflection_readings --remote --command "SELECT created_at, locale, question, spread_name, model FROM ai_readings ORDER BY created_at DESC LIMIT 20;"
+```

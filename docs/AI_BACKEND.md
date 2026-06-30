@@ -28,7 +28,7 @@ Preferred shape:
 GitHub Pages frontend
   -> Cloudflare Worker
   -> DeepSeek API
-  -> KV or D1 rate-limit counter
+  -> D1 reading log and rate-limit counter
 ```
 
 Fallback hosting options:
@@ -53,6 +53,19 @@ The endpoint returns:
 - Practical next actions
 - Journaling questions
 - Safety note when the user asks for medical, legal, investment, or major financial certainty
+
+The Worker stores successful AI readings in D1:
+
+- Created time
+- Hashed IP and request day
+- User question
+- Spread and cards
+- Local first-pass interpretation
+- Prompt sent to the model
+- AI response
+- Model name and token usage when available
+
+This is for the owner to inspect in Cloudflare D1, not a user-facing account feature.
 
 ## Controls Needed Before Launch
 
@@ -88,3 +101,10 @@ Checked on 2026-06-30:
 - The first AI endpoint should not require login or a database-backed user model.
 
 See [Next Phase Direction](NEXT_PHASE_DIRECTION.md) for the current product, visual, hosting, and cost decisions.
+
+Implementation files:
+
+- `worker/src/index.js`
+- `worker/migrations/0001_create_readings.sql`
+- `wrangler.toml`
+- `src/lib/aiReading.ts`

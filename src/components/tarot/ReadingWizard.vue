@@ -88,6 +88,17 @@ function saveCurrentReading() {
   journalVersion.value += 1;
 }
 
+function attachAiResponse(response: string) {
+  if (!session.value) {
+    return;
+  }
+
+  session.value = {
+    ...session.value,
+    aiResponse: response
+  };
+}
+
 watch(locale, (next) => {
   if (typeof localStorage !== "undefined") {
     localStorage.setItem("arcana-mirror-locale", next);
@@ -202,6 +213,7 @@ onBeforeUnmount(() => {
         :locale="locale"
         :saved="saved"
         @save="saveCurrentReading"
+        @ai-response="attachAiResponse"
       />
 
       <section v-else-if="!isDrawing" class="empty-result">

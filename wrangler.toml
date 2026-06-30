@@ -1,0 +1,15 @@
+name = "tarot-reflection-api"
+main = "worker/src/index.js"
+compatibility_date = "2026-06-30"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGINS = "https://myshkin451.github.io,http://localhost:4321,http://127.0.0.1:4321"
+DAILY_LIMIT = "20"
+DEEPSEEK_MODEL = "deepseek-v4-flash"
+
+[[d1_databases]]
+binding = "READINGS_DB"
+database_name = "tarot_reflection_readings"
+database_id = "replace-with-cloudflare-d1-database-id"
+migrations_dir = "worker/migrations"

@@ -14,6 +14,16 @@ Astro pages
 
 There is no server runtime in v1. All application state is local to the browser.
 
+An optional Cloudflare Worker backend can be added for direct AI readings:
+
+```text
+Vue reading result
+  -> src/lib/aiReading.ts
+  -> Cloudflare Worker /api/tarot/analyze
+  -> DeepSeek API
+  -> Cloudflare D1 reading log and daily IP counter
+```
+
 ## Important Files
 
 - `src/pages/index.astro`: home and reading app entry
@@ -27,7 +37,10 @@ There is no server runtime in v1. All application state is local to the browser.
 - `src/lib/draw.ts`: random drawing logic
 - `src/lib/interpretation.ts`: local first-pass reading interpretation
 - `src/lib/promptBuilder.ts`: prompt and Markdown export logic
+- `src/lib/aiReading.ts`: optional AI reading request payload and client
 - `src/lib/storage.ts`: localStorage wrapper
+- `worker/src/index.js`: Cloudflare Worker AI proxy
+- `worker/migrations/0001_create_readings.sql`: D1 tables for AI readings and daily IP limits
 
 ## Data Model
 
@@ -61,3 +74,5 @@ The app catches storage errors and fails softly. There is no sync, account, or r
 The app must not include API keys, secrets, or direct AI provider calls in browser code. Future AI analysis should be routed through a server endpoint controlled by the site owner.
 
 GitHub Pages can keep serving the static app. If DeepSeek or another model provider is added, the model call should live in a separate backend surface such as a Cloudflare Worker, Vercel Function, or small API service.
+
+The implemented Worker path uses server-side secrets and D1. `DEEPSEEK_API_KEY` and `IP_HASH_SALT` must be stored with `wrangler secret put`, never committed.

@@ -23,6 +23,7 @@ https://myshkin451.github.io/tarot-reflection/
 - CSS/SVG-style card faces, no copyrighted tarot image dependency
 - Shuffle and reveal motion for the draw flow
 - AI Prompt Builder with compact and deep-analysis prompts
+- Optional Cloudflare Worker + DeepSeek direct AI reading flow
 - Copy prompt and download Markdown
 - Local journal powered by `localStorage`
 - Export saved readings as JSON or Markdown

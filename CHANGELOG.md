@@ -8,6 +8,7 @@
 - Updated AI prompts to include local interpretation context before external model analysis.
 - Added DeepSeek/backend integration planning while keeping API keys out of the static frontend.
 - Added next-phase visual, deck, motion, and Cloudflare Worker direction with a generated concept reference.
+- Added optional Cloudflare Worker AI endpoint, D1 reading logs, IP daily limits, and frontend AI reading client.
 
 ## 0.1.0
 

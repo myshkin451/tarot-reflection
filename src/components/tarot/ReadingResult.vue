@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import CardFace from "./CardFace.vue";
 import PromptBuilder from "./PromptBuilder.vue";
+import { getAiReadingEndpoint, requestAiReading } from "@/lib/aiReading";
 import { buildReadingInsight } from "@/lib/interpretation";
 import { text } from "@/lib/locale";
 import { readingToMarkdown } from "@/lib/promptBuilder";
@@ -15,9 +16,15 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   save: [];
+  aiResponse: [response: string];
 }>();
 
 const insight = computed(() => buildReadingInsight(props.session, props.locale));
+const aiEnabled = Boolean(getAiReadingEndpoint());
+const aiLoading = ref(false);
+const aiResponse = ref(props.session.aiResponse ?? "");
+const aiError = ref("");
+const aiRemaining = ref<number | undefined>(undefined);
 
 function exportMarkdown() {
   const blob = new Blob([readingToMarkdown(props.session, props.locale)], { type: "text/markdown;charset=utf-8" });
@@ -27,6 +34,29 @@ function exportMarkdown() {
   link.download = `arcana-mirror-reading-${props.session.id}.md`;
   link.click();
   URL.revokeObjectURL(url);
+}
+
+async function generateAiReading() {
+  if (!aiEnabled || aiLoading.value) {
+    return;
+  }
+
+  aiLoading.value = true;
+  aiError.value = "";
+
+  try {
+    const result = await requestAiReading(props.session, props.locale);
+    aiResponse.value = result.response;
+    aiRemaining.value = result.remaining;
+    emit("aiResponse", result.response);
+  } catch {
+    aiError.value =
+      props.locale === "zh-CN"
+        ? "这次没有生成成功。可以稍后再试，或先使用下面的提示词。"
+        : "This reading could not be generated. Try again later, or use the prompt below.";
+  } finally {
+    aiLoading.value = false;
+  }
 }
 </script>
 
@@ -102,6 +132,42 @@ function exportMarkdown() {
         <p class="reflection">{{ note.reflection }}</p>
       </article>
     </div>
+
+    <section v-if="aiEnabled || aiResponse || aiError" class="ai-reading" aria-labelledby="ai-reading-title">
+      <div class="ai-reading-heading">
+        <div>
+          <span>{{ locale === "zh-CN" ? "AI 解读" : "AI reading" }}</span>
+          <h3 id="ai-reading-title">{{ locale === "zh-CN" ? "继续深入看这组牌" : "Go deeper with this spread" }}</h3>
+        </div>
+        <button type="button" :disabled="aiLoading" @click="generateAiReading">
+          {{
+            aiLoading
+              ? locale === "zh-CN"
+                ? "生成中"
+                : "Generating"
+              : aiResponse
+                ? locale === "zh-CN"
+                  ? "重新生成"
+                  : "Regenerate"
+                : locale === "zh-CN"
+                  ? "生成 AI 解读"
+                  : "Generate reading"
+          }}
+        </button>
+      </div>
+
+      <p v-if="typeof aiRemaining === 'number'" class="ai-reading-meta">
+        {{ locale === "zh-CN" ? `今天还可生成 ${aiRemaining} 次` : `${aiRemaining} AI readings left today` }}
+      </p>
+
+      <div v-if="aiResponse" class="ai-reading-body">
+        {{ aiResponse }}
+      </div>
+      <p v-else-if="aiError" class="ai-reading-error">{{ aiError }}</p>
+      <p v-else class="ai-reading-empty">
+        {{ locale === "zh-CN" ? "用当前问题、牌面和本地初步解读生成一段更完整的解释。" : "Use the question, cards, and local first-pass reading to generate a fuller interpretation." }}
+      </p>
+    </section>
 
     <PromptBuilder :session="session" :locale="locale" />
   </section>
@@ -298,8 +364,68 @@ button {
   color: rgba(32, 24, 15, 0.82);
 }
 
+.ai-reading {
+  display: grid;
+  gap: 16px;
+  border: 1px solid rgba(32, 24, 15, 0.14);
+  padding: clamp(18px, 3vw, 24px);
+  background:
+    linear-gradient(135deg, rgba(32, 24, 15, 0.06), rgba(151, 89, 52, 0.08)),
+    rgba(255, 255, 255, 0.22);
+}
+
+.ai-reading-heading {
+  display: flex;
+  gap: 14px;
+  align-items: start;
+  justify-content: space-between;
+}
+
+.ai-reading-heading span {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(151, 89, 52, 0.82);
+  font: 850 11px/1 var(--font-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ai-reading-heading button {
+  flex: 0 0 auto;
+  border-color: rgba(151, 89, 52, 0.32);
+  color: #f8f0de;
+  background: #20180f;
+}
+
+.ai-reading-heading button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.ai-reading-meta,
+.ai-reading-empty,
+.ai-reading-error {
+  margin: 0;
+  color: rgba(32, 24, 15, 0.68);
+  font: 600 13px/1.5 var(--font-ui);
+}
+
+.ai-reading-error {
+  color: #7d2c1f;
+}
+
+.ai-reading-body {
+  white-space: pre-wrap;
+  color: rgba(32, 24, 15, 0.82);
+  font: 500 15px/1.72 var(--font-ui);
+}
+
 @media (max-width: 700px) {
   .result-heading {
+    display: grid;
+  }
+
+  .ai-reading-heading {
     display: grid;
   }
 
