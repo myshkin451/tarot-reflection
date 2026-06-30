@@ -11,5 +11,5 @@ DEEPSEEK_MODEL = "deepseek-v4-flash"
 [[d1_databases]]
 binding = "READINGS_DB"
 database_name = "tarot_reflection_readings"
-database_id = "replace-with-cloudflare-d1-database-id"
+database_id = "53a4128b-4c23-4bf3-8992-b68514a68db3"
 migrations_dir = "worker/migrations"
