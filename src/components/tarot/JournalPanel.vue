@@ -61,7 +61,7 @@ watch(() => props.refreshKey, refresh);
         <div>
           <span>{{ new Date(session.createdAt).toLocaleString(locale) }}</span>
           <h3>{{ text(session.spreadName, locale) }}</h3>
-          <p>{{ session.question || (locale === "zh-CN" ? "未命名反思" : "Untitled reflection") }}</p>
+          <p>{{ session.question || (locale === "zh-CN" ? "未命名牌阵" : "Untitled reading") }}</p>
         </div>
         <button type="button" @click="remove(session.id)">
           {{ locale === "zh-CN" ? "删除" : "Delete" }}

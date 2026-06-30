@@ -14,8 +14,8 @@
 
 - Add local first-pass reading summary logic
 - Add position-specific interpretation helpers
-- Show advice, shadow, and journaling questions in the card library
-- Add examples for good reflective questions
+- Show advice and shadow notes in the card library
+- Polish card meanings so local reading stays useful without AI
 
 ## V1.2 Visual Deck And Motion
 
@@ -34,6 +34,7 @@ When AI analysis is added, use a controlled backend endpoint. The current prefer
 
 ```text
 /api/tarot/analyze
+/api/tarot/analyze/stream
 ```
 
 The backend should include:
@@ -44,6 +45,7 @@ The backend should include:
 - A simple budget cap
 - DeepSeek as the first provider
 - A local interpretation fallback when the provider fails
+- Streaming output for the generated reading
 - Natural UI copy that does not overexplain backend mechanics
 
 See [AI Backend Plan](AI_BACKEND.md) for the recommended DeepSeek proxy shape.

@@ -23,7 +23,7 @@
   "result": {
     "keywords": "Keywords",
     "meaning": "Meaning",
-    "reflection": "Reflection question",
+    "reflection": "Card note",
     "advice": "Advice",
     "prompt": "AI Prompt Builder",
     "copy": "Copy",
@@ -45,7 +45,7 @@
   },
   "cards": {
     "title": "Card meanings",
-    "subtitle": "Each card includes upright and reversed meanings, advice, shadow notes, and journaling questions for first-pass interpretation.",
+    "subtitle": "Each card includes upright and reversed meanings, advice, and shadow notes for reading before AI.",
     "upright": "Upright",
     "reversed": "Reversed"
   }

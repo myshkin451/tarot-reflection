@@ -33,7 +33,9 @@ describe("buildPrompt", () => {
     });
 
     expect(prompt).toContain("Should I keep building this project?");
-    expect(prompt).toContain("First-pass local interpretation");
+    expect(prompt).toContain("First read from the card table");
+    expect(prompt).not.toContain("Three reflection questions");
+    expect(prompt).not.toContain("Journal Questions");
     for (const drawn of cards) {
       expect(prompt).toContain(drawn.card.name.en);
       expect(prompt).toContain(drawn.position.name.en);

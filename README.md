@@ -1,8 +1,8 @@
 # Arcana Mirror
 
-Arcana Mirror is a static-first tarot reflection app. It draws cards, gives an immediate local first-pass interpretation, saves local journal entries, and generates high-quality prompts that can be copied into ChatGPT, Claude, Gemini, DeepSeek, or another AI tool.
+Arcana Mirror is a static-first tarot reading app. It draws cards, gives an immediate local card reading, saves local journal entries, and can generate a deeper AI reading through a small Cloudflare Worker.
 
-It is not positioned as deterministic fortune telling. The product goal is quieter and more useful: help a person clarify a question, notice patterns, write reflections, and prepare context for deeper AI-assisted interpretation.
+It is not positioned as deterministic fortune telling. The product goal is quieter and more useful: help a person ask a question, read the cards, notice the pattern on the table, and get a richer AI-assisted interpretation when they want one.
 
 ## Live Site
 
@@ -17,13 +17,14 @@ https://myshkin451.github.io/tarot-reflection/
 - One-card, three-card, and five-card spreads
 - Optional reversed cards
 - No duplicate cards in one reading
-- 78-card structured tarot dataset with upright, reversed, advice, shadow, and journal prompts
-- Local first-pass reading interpretation before any AI step
+- 78-card structured tarot dataset with upright, reversed, advice, and shadow notes
+- Local card reading before any AI step
 - English and Simplified Chinese UI
 - CSS/SVG-style card faces, no copyrighted tarot image dependency
 - Shuffle and reveal motion for the draw flow
 - AI Prompt Builder with compact and deep-analysis prompts
 - Optional Cloudflare Worker + DeepSeek direct AI reading flow
+- Streaming AI reading endpoint for progressive output
 - Copy prompt and download Markdown
 - Local journal powered by `localStorage`
 - Export saved readings as JSON or Markdown
@@ -31,11 +32,11 @@ https://myshkin451.github.io/tarot-reflection/
 
 ## Privacy And Safety
 
-- No backend in v1
 - No login or account system
 - No browser-side AI API calls
 - No API keys or secrets in the frontend
 - Reading history stays in the user's browser storage
+- Successful AI readings are stored in Cloudflare D1 for owner-side inspection and rate-limit/debug context
 - Prompts instruct AI tools not to present readings as fixed fate and not to give medical, legal, investment, or financial certainty
 
 ## Tech Stack

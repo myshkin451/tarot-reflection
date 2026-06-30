@@ -12,12 +12,14 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const corsHeaders = getCorsHeaders(request, env);
+    const isJsonAnalyze = url.pathname === "/api/tarot/analyze";
+    const isStreamAnalyze = url.pathname === "/api/tarot/analyze/stream";
 
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
 
-    if (url.pathname !== "/api/tarot/analyze") {
+    if (!isJsonAnalyze && !isStreamAnalyze) {
       return jsonResponse({ error: "Not found" }, 404, corsHeaders);
     }
 
@@ -55,10 +57,11 @@ export default {
     }
 
     const now = new Date();
+    const createdAt = now.toISOString();
     const day = now.toISOString().slice(0, 10);
     const ipHash = await hashClientIp(request, env);
     const dailyLimit = readPositiveInt(env.DAILY_LIMIT, DEFAULT_DAILY_LIMIT);
-    const limitResult = await incrementDailyLimit(env.READINGS_DB, ipHash, day, now.toISOString());
+    const limitResult = await incrementDailyLimit(env.READINGS_DB, ipHash, day, createdAt);
 
     if (limitResult.count > dailyLimit) {
       return jsonResponse(
@@ -75,6 +78,22 @@ export default {
     const model = env.DEEPSEEK_MODEL || DEFAULT_MODEL;
     const prompt = buildPrompt(payload);
     const readingId = crypto.randomUUID();
+    const remaining = Math.max(dailyLimit - limitResult.count, 0);
+
+    if (isStreamAnalyze) {
+      return streamAiReading({
+        env,
+        corsHeaders,
+        readingId,
+        createdAt,
+        day,
+        ipHash,
+        payload,
+        prompt,
+        model,
+        remaining
+      });
+    }
 
     try {
       const deepSeekResult = await callDeepSeek({
@@ -86,7 +105,7 @@ export default {
 
       await saveReading(env.READINGS_DB, {
         id: readingId,
-        createdAt: now.toISOString(),
+        createdAt,
         day,
         ipHash,
         payload,
@@ -100,10 +119,10 @@ export default {
       return jsonResponse(
         {
           id: readingId,
-          createdAt: now.toISOString(),
+          createdAt,
           model,
           response: deepSeekResult.response,
-          remaining: Math.max(dailyLimit - limitResult.count, 0)
+          remaining
         },
         200,
         corsHeaders
@@ -113,7 +132,7 @@ export default {
         {
           error: "AI reading failed",
           message: error instanceof Error ? error.message : "Unknown provider error",
-          remaining: Math.max(dailyLimit - limitResult.count, 0)
+          remaining
         },
         502,
         corsHeaders
@@ -265,7 +284,7 @@ Watch for: ${card.shadow}`;
 
   if (isZh) {
     return [
-      "你是一位清醒、成熟、擅长把塔罗转化为自我理解的解读者。请给出有帮助、具体、自然的中文解读。",
+      "你是一位经验丰富的塔罗牌解读者。请像真正给来访者读牌一样，围绕牌面、位置、正逆位和牌与牌之间的力量关系展开。",
       "",
       `用户问题：${payload.question || "未填写，请围绕当下最值得看见的主题展开。"}`,
       `牌阵：${payload.spreadName}`,
@@ -273,25 +292,30 @@ Watch for: ${card.shadow}`;
       "抽牌结果：",
       ...cardLines,
       "",
-      "本地初步解读：",
+      "牌面初读：",
       `标题：${payload.localInsight.title}`,
       `概览：${payload.localInsight.overview}`,
       `牌面结构：${payload.localInsight.pattern}`,
       `下一步：${payload.localInsight.nextStep}`,
       "",
-      "请按以下结构输出：",
-      "1. 整体主题",
-      "2. 每张牌在当前位置上的含义",
-      "3. 牌与牌之间的关系",
-      "4. 今天可以采取的具体行动",
-      "5. 3 个继续追问或书写的问题",
+      "请用 Markdown 输出，使用二级标题和自然段。建议结构：",
+      "## 总体牌势",
+      "## 逐张牌义",
+      "## 牌与牌之间的力量",
+      "## 关键判断",
+      "## 可以怎么做",
       "",
-      "不要把抽牌说成确定命运；不要给医疗、法律、投资或重大财务确定性建议。"
+      "写作要求：",
+      "- 直接读牌，不要写“继续追问”“书写问题”“反思问题”这类结尾。",
+      "- 全文尽量使用陈述句和判断句；行动建议写成清楚的动作，不要用问题来引导用户。",
+      "- 不要出现“自我反思工具”“对话地图”“不是未来判决书”这类产品化说明。",
+      "- 可以指出张力和盲点，但不要恐吓、宿命化，避免医疗、法律、投资或重大财务确定性建议。",
+      "- 语言要深入、细腻、有画面感，但不要空泛鸡汤。"
     ].join("\n");
   }
 
   return [
-    "You are a clear, mature tarot reflection guide. Give a useful, concrete, natural interpretation in English.",
+    "You are an experienced tarot reader. Read the spread through card meanings, positions, reversals, and the force between the cards.",
     "",
     `Question: ${payload.question || "No question was entered. Focus on the most useful present-tense theme."}`,
     `Spread: ${payload.spreadName}`,
@@ -299,21 +323,41 @@ Watch for: ${card.shadow}`;
     "Cards drawn:",
     ...cardLines,
     "",
-    "Local first-pass interpretation:",
+    "First read from the card table:",
     `Title: ${payload.localInsight.title}`,
     `Overview: ${payload.localInsight.overview}`,
     `Pattern: ${payload.localInsight.pattern}`,
     `Next step: ${payload.localInsight.nextStep}`,
     "",
-    "Respond with:",
-    "1. Overall theme",
-    "2. Meaning of each card in its position",
-    "3. Relationship between the cards",
-    "4. Practical next actions for today",
-    "5. Three follow-up or journaling questions",
+    "Use Markdown with second-level headings and natural paragraphs. Suggested structure:",
+    "## Overall Shape",
+    "## Card by Card",
+    "## The Force Between the Cards",
+    "## Key Reading",
+    "## What to Do",
     "",
-    "Do not present the reading as fixed fate. Do not give medical, legal, investment, or major financial certainty."
+    "Requirements:",
+    "- Do not end with follow-up questions or journaling prompts.",
+    "- Prefer declarative sentences. Write practical guidance as clear actions, not as questions for the user to answer.",
+    "- Do not call this a self-reflection tool, a dialogue map, or a future verdict.",
+    "- Name tension and blind spots without fearmongering or deterministic claims.",
+    "- Avoid medical, legal, investment, or major financial certainty.",
+    "- Make the reading specific, vivid, and useful rather than generic."
   ].join("\n");
+}
+
+function buildSystemPrompt(locale) {
+  return locale === "zh-CN"
+    ? [
+        "你是一位成熟、有经验、语言准确的塔罗牌解读者。",
+        "你可以深入分析关系、情绪、选择和行动，但不要恐吓、宿命化或给出医疗、法律、投资、重大财务方面的确定性建议。",
+        "不要称自己为 AI，不要解释产品功能，不要把解读包装成自我反思练习。"
+      ].join("\n")
+    : [
+        "You are a mature, experienced tarot reader with precise language.",
+        "You may read relationships, emotions, choices, and practical moves in depth, but do not fearmonger, make deterministic claims, or give medical, legal, investment, or major financial certainty.",
+        "Do not call yourself AI, explain product mechanics, or frame the reading as a self-reflection exercise."
+      ].join("\n");
 }
 
 async function callDeepSeek({ apiKey, model, prompt, locale }) {
@@ -328,18 +372,15 @@ async function callDeepSeek({ apiKey, model, prompt, locale }) {
       messages: [
         {
           role: "system",
-          content:
-            locale === "zh-CN"
-              ? "你提供塔罗相关的反思型解读，语气自然、有分寸、具体，不制造恐吓或确定性预言。"
-              : "You provide reflective tarot interpretations with natural, concrete, measured language and no deterministic claims."
+          content: buildSystemPrompt(locale)
         },
         {
           role: "user",
           content: prompt
         }
       ],
-      temperature: 0.7,
-      max_tokens: 1600
+      temperature: 0.74,
+      max_tokens: 2400
     })
   });
 
@@ -361,6 +402,188 @@ async function callDeepSeek({ apiKey, model, prompt, locale }) {
     usage: data?.usage ?? null,
     requestId
   };
+}
+
+function streamAiReading({ env, corsHeaders, readingId, createdAt, day, ipHash, payload, prompt, model, remaining }) {
+  const encoder = new TextEncoder();
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      const send = (event, data) => {
+        controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
+      };
+
+      send("meta", {
+        id: readingId,
+        createdAt,
+        model,
+        remaining
+      });
+
+      try {
+        const deepSeekResult = await callDeepSeekStream({
+          apiKey: env.DEEPSEEK_API_KEY,
+          model,
+          prompt,
+          locale: payload.locale,
+          onDelta(text) {
+            send("delta", { text });
+          }
+        });
+
+        await saveReading(env.READINGS_DB, {
+          id: readingId,
+          createdAt,
+          day,
+          ipHash,
+          payload,
+          prompt,
+          response: deepSeekResult.response,
+          model,
+          usage: deepSeekResult.usage,
+          requestId: deepSeekResult.requestId
+        });
+
+        send("done", {
+          id: readingId,
+          createdAt,
+          model,
+          remaining
+        });
+      } catch (error) {
+        send("error", {
+          message: error instanceof Error ? error.message : "Unknown provider error",
+          remaining
+        });
+      } finally {
+        controller.close();
+      }
+    }
+  });
+
+  return new Response(stream, {
+    status: 200,
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      "X-Accel-Buffering": "no"
+    }
+  });
+}
+
+async function callDeepSeekStream({ apiKey, model, prompt, locale, onDelta }) {
+  const response = await fetch("https://api.deepseek.com/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        {
+          role: "system",
+          content: buildSystemPrompt(locale)
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      temperature: 0.74,
+      max_tokens: 2400,
+      stream: true
+    })
+  });
+
+  const requestId = response.headers.get("x-request-id") || response.headers.get("cf-ray") || "";
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    const message = data?.error?.message || `DeepSeek request failed with status ${response.status}`;
+    throw new Error(message);
+  }
+
+  if (!response.body) {
+    throw new Error("DeepSeek returned an empty stream");
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let fullText = "";
+  let usage = null;
+
+  while (true) {
+    const { value, done } = await reader.read();
+
+    if (done) {
+      break;
+    }
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split(/\r?\n/);
+    buffer = lines.pop() ?? "";
+
+    for (const line of lines) {
+      const chunk = parseDeepSeekSseLine(line);
+
+      if (!chunk) {
+        continue;
+      }
+
+      if (chunk.usage) {
+        usage = chunk.usage;
+      }
+
+      const delta = chunk.choices?.[0]?.delta?.content ?? "";
+      if (typeof delta === "string" && delta) {
+        fullText += delta;
+        onDelta(delta);
+      }
+    }
+  }
+
+  buffer += decoder.decode();
+  const finalChunk = parseDeepSeekSseLine(buffer);
+  const finalDelta = finalChunk?.choices?.[0]?.delta?.content ?? "";
+  if (typeof finalDelta === "string" && finalDelta) {
+    fullText += finalDelta;
+    onDelta(finalDelta);
+  }
+  if (finalChunk?.usage) {
+    usage = finalChunk.usage;
+  }
+
+  if (!fullText.trim()) {
+    throw new Error("DeepSeek returned an empty response");
+  }
+
+  return {
+    response: fullText.trim(),
+    usage,
+    requestId
+  };
+}
+
+function parseDeepSeekSseLine(line) {
+  const trimmed = line.trim();
+
+  if (!trimmed.startsWith("data:")) {
+    return null;
+  }
+
+  const payload = trimmed.slice(5).trim();
+  if (!payload || payload === "[DONE]") {
+    return null;
+  }
+
+  try {
+    return JSON.parse(payload);
+  } catch {
+    return null;
+  }
 }
 
 async function saveReading(db, record) {

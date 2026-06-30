@@ -2,9 +2,10 @@
 import { computed, ref } from "vue";
 import CardFace from "./CardFace.vue";
 import PromptBuilder from "./PromptBuilder.vue";
-import { getAiReadingEndpoint, requestAiReading } from "@/lib/aiReading";
+import { AiReadingRequestError, getAiReadingEndpoint, requestAiReading, requestAiReadingStream } from "@/lib/aiReading";
 import { buildReadingInsight } from "@/lib/interpretation";
 import { text } from "@/lib/locale";
+import { renderSafeMarkdown } from "@/lib/markdown";
 import { readingToMarkdown } from "@/lib/promptBuilder";
 import type { Locale, ReadingSession } from "@/lib/types";
 
@@ -25,6 +26,7 @@ const aiLoading = ref(false);
 const aiResponse = ref(props.session.aiResponse ?? "");
 const aiError = ref("");
 const aiRemaining = ref<number | undefined>(undefined);
+const aiResponseHtml = computed(() => renderSafeMarkdown(aiResponse.value));
 
 function exportMarkdown() {
   const blob = new Blob([readingToMarkdown(props.session, props.locale)], { type: "text/markdown;charset=utf-8" });
@@ -43,15 +45,36 @@ async function generateAiReading() {
 
   aiLoading.value = true;
   aiError.value = "";
+  aiResponse.value = "";
 
   try {
-    const result = await requestAiReading(props.session, props.locale);
+    const result = await requestAiReadingStream(props.session, props.locale, {
+      onMeta(meta) {
+        aiRemaining.value = meta.remaining;
+      },
+      onDelta(text) {
+        aiResponse.value += text;
+      }
+    }).catch((error) => {
+      if (error instanceof AiReadingRequestError && (error.status === 404 || error.status === 405)) {
+        return requestAiReading(props.session, props.locale);
+      }
+
+      throw error;
+    });
+
     aiResponse.value = result.response;
     aiRemaining.value = result.remaining;
     emit("aiResponse", result.response);
-  } catch {
-    aiError.value =
-      props.locale === "zh-CN"
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    const limited = message.includes("limit") || message.includes("次数") || message.includes("429");
+
+    aiError.value = limited
+      ? props.locale === "zh-CN"
+        ? "今天的生成次数已经用完了。可以先看牌面初读，明天再继续。"
+        : "The daily reading limit has been reached. Use the card reading for now and try again tomorrow."
+      : props.locale === "zh-CN"
         ? "这次没有生成成功。可以稍后再试，或先使用下面的提示词。"
         : "This reading could not be generated. Try again later, or use the prompt below.";
   } finally {
@@ -104,15 +127,9 @@ async function generateAiReading() {
           <p>{{ insight.pattern }}</p>
         </div>
         <div>
-          <span>{{ locale === "zh-CN" ? "下一步" : "Next step" }}</span>
+          <span>{{ locale === "zh-CN" ? "落点" : "Landing point" }}</span>
           <p>{{ insight.nextStep }}</p>
         </div>
-      </div>
-      <div class="question-list">
-        <span>{{ locale === "zh-CN" ? "继续书写" : "Journal with" }}</span>
-        <ol>
-          <li v-for="question in insight.questions" :key="question">{{ question }}</li>
-        </ol>
       </div>
     </section>
 
@@ -129,7 +146,6 @@ async function generateAiReading() {
           <span v-for="keyword in note.keywords" :key="keyword">{{ keyword }}</span>
         </div>
         <p class="shadow">{{ locale === "zh-CN" ? "需要留意：" : "Watch for: " }}{{ note.shadow }}</p>
-        <p class="reflection">{{ note.reflection }}</p>
       </article>
     </div>
 
@@ -137,7 +153,7 @@ async function generateAiReading() {
       <div class="ai-reading-heading">
         <div>
           <span>{{ locale === "zh-CN" ? "AI 解读" : "AI reading" }}</span>
-          <h3 id="ai-reading-title">{{ locale === "zh-CN" ? "继续深入看这组牌" : "Go deeper with this spread" }}</h3>
+          <h3 id="ai-reading-title">{{ locale === "zh-CN" ? "看这组牌更深的一层" : "Read the deeper layer" }}</h3>
         </div>
         <button type="button" :disabled="aiLoading" @click="generateAiReading">
           {{
@@ -150,7 +166,7 @@ async function generateAiReading() {
                   ? "重新生成"
                   : "Regenerate"
                 : locale === "zh-CN"
-                  ? "生成 AI 解读"
+                  ? "生成解读"
                   : "Generate reading"
           }}
         </button>
@@ -160,12 +176,10 @@ async function generateAiReading() {
         {{ locale === "zh-CN" ? `今天还可生成 ${aiRemaining} 次` : `${aiRemaining} AI readings left today` }}
       </p>
 
-      <div v-if="aiResponse" class="ai-reading-body">
-        {{ aiResponse }}
-      </div>
+      <div v-if="aiResponse" class="ai-reading-body" v-html="aiResponseHtml" />
       <p v-else-if="aiError" class="ai-reading-error">{{ aiError }}</p>
       <p v-else class="ai-reading-empty">
-        {{ locale === "zh-CN" ? "用当前问题、牌面和本地初步解读生成一段更完整的解释。" : "Use the question, cards, and local first-pass reading to generate a fuller interpretation." }}
+        {{ locale === "zh-CN" ? "根据当前问题和牌面生成一段完整读牌。" : "Generate a fuller reading from the current question and spread." }}
       </p>
     </section>
 
@@ -261,8 +275,7 @@ button {
 }
 
 .insight-lead > span,
-.insight-grid span,
-.question-list > span {
+.insight-grid span {
   color: rgba(151, 89, 52, 0.82);
   font: 850 11px/1 var(--font-ui);
   letter-spacing: 0.04em;
@@ -270,8 +283,7 @@ button {
 }
 
 .insight-lead p,
-.insight-grid p,
-.question-list li {
+.insight-grid p {
   margin: 0;
   color: rgba(32, 24, 15, 0.76);
   font: 500 15px/1.62 var(--font-ui);
@@ -289,18 +301,6 @@ button {
   gap: 9px;
   padding: 16px;
   background: rgba(255, 255, 255, 0.25);
-}
-
-.question-list {
-  display: grid;
-  gap: 12px;
-}
-
-.question-list ol {
-  display: grid;
-  gap: 9px;
-  margin: 0;
-  padding-left: 22px;
 }
 
 .interpretations {
@@ -358,12 +358,6 @@ button {
   text-transform: none;
 }
 
-.interpretation .reflection {
-  border-left: 2px solid rgba(151, 89, 52, 0.5);
-  padding-left: 12px;
-  color: rgba(32, 24, 15, 0.82);
-}
-
 .ai-reading {
   display: grid;
   gap: 16px;
@@ -415,9 +409,48 @@ button {
 }
 
 .ai-reading-body {
-  white-space: pre-wrap;
+  display: grid;
+  gap: 12px;
   color: rgba(32, 24, 15, 0.82);
   font: 500 15px/1.72 var(--font-ui);
+}
+
+.ai-reading-body :deep(h2),
+.ai-reading-body :deep(h3),
+.ai-reading-body :deep(h4) {
+  margin: 8px 0 0;
+  color: #20180f;
+  font-family: var(--font-display);
+  letter-spacing: 0;
+}
+
+.ai-reading-body :deep(h2) {
+  font-size: 24px;
+  line-height: 1.12;
+}
+
+.ai-reading-body :deep(h3),
+.ai-reading-body :deep(h4) {
+  font-size: 19px;
+  line-height: 1.18;
+}
+
+.ai-reading-body :deep(p),
+.ai-reading-body :deep(ul),
+.ai-reading-body :deep(ol) {
+  margin: 0;
+}
+
+.ai-reading-body :deep(ul),
+.ai-reading-body :deep(ol) {
+  display: grid;
+  gap: 8px;
+  padding-left: 20px;
+}
+
+.ai-reading-body :deep(strong) {
+  color: #20180f;
+  font-weight: 800;
 }
 
 @media (max-width: 700px) {

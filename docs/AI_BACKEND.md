@@ -2,7 +2,7 @@
 
 ## Product Decision
 
-Arcana Mirror should work before AI is available. The local first-pass interpretation is the primary experience; AI should be an optional deeper-analysis layer.
+Arcana Mirror should work before AI is available. The local card reading is the primary experience; AI should be an optional deeper-analysis layer.
 
 This keeps the product useful when:
 
@@ -20,6 +20,7 @@ Keep GitHub Pages for the frontend and add one small backend endpoint. The faste
 
 ```text
 POST /api/tarot/analyze
+POST /api/tarot/analyze/stream
 ```
 
 Preferred shape:
@@ -41,7 +42,7 @@ The endpoint receives:
 
 - User question
 - Spread id and spread name
-- Drawn cards with position, orientation, keywords, meanings, advice, shadow, and local interpretation
+- Drawn cards with position, orientation, keywords, meanings, advice, shadow, and local card reading
 - Desired language
 - Desired depth
 
@@ -51,8 +52,9 @@ The endpoint returns:
 - Per-card position interpretation
 - Card relationship analysis
 - Practical next actions
-- Journaling questions
-- Safety note when the user asks for medical, legal, investment, or major financial certainty
+- SSE `meta`, `delta`, `done`, and `error` events from the stream endpoint
+
+The AI prompt should not ask the model to end with follow-up questions or journaling prompts. The answer should read like a real tarot interpretation: specific, deep, concrete, and rooted in the cards.
 
 The Worker stores successful AI readings in D1:
 
@@ -60,7 +62,7 @@ The Worker stores successful AI readings in D1:
 - Hashed IP and request day
 - User question
 - Spread and cards
-- Local first-pass interpretation
+- Local card reading
 - Prompt sent to the model
 - AI response
 - Model name and token usage when available
@@ -76,7 +78,7 @@ This is for the owner to inspect in Cloudflare D1, not a user-facing account fea
 - Limit model output tokens
 - Add timeout and retry behavior
 - Keep a local interpretation fallback in the UI
-- Avoid long-term storage of raw user questions in the MVP
+- Store successful AI readings in D1 so the owner can inspect what was generated
 - Keep UI copy natural; do not overexplain backend mechanics in the product surface
 
 ## DeepSeek Fit

@@ -11,16 +11,16 @@ export interface PromptOptions {
 
 const toneCopy = {
   calm: {
-    en: "clear, reflective, and grounded",
-    zh: "清晰、反思性、落地"
+    en: "clear, restrained, and grounded",
+    zh: "清晰、沉稳、落地"
   },
   practical: {
     en: "practical, direct, and action-oriented",
     zh: "务实、直接、行动导向"
   },
   gentle: {
-    en: "gentle, spacious, and emotionally careful",
-    zh: "温和、留有空间、照顾情绪"
+    en: "gentle, spacious, and emotionally precise",
+    zh: "温和、留有空间、情绪准确"
   }
 };
 
@@ -41,60 +41,60 @@ export function buildPrompt(session: ReadingSession, options: PromptOptions): st
 
   if (isZh) {
     return [
-      "请作为一位成熟、清醒、以自我反思为核心的塔罗解读助手，帮助我分析这次抽牌。",
+      "请作为一位成熟、清醒、有经验的塔罗牌解读者，帮助我分析这次抽牌。",
       "",
-      `用户问题：${session.question || "未填写，请围绕当下最值得反思的主题展开。"}`,
+      `用户问题：${session.question || "未填写，请围绕当下最值得看见的主题展开。"}`,
       `牌阵：${text(session.spreadName, promptLocale)}`,
       `输出语言：简体中文`,
       `语气：${toneCopy[options.tone].zh}`,
-      `深度：${options.depth === "deep" ? "深度分析，包含结构化洞察、行动建议和反思问题" : "紧凑分析，重点清晰、可行动"}`,
+      `深度：${options.depth === "deep" ? "深度读牌，包含牌势、逐张牌义、牌与牌之间的力量和行动落点" : "紧凑读牌，重点清晰、可行动"}`,
       "",
       "抽牌结果：",
       ...lines,
       "",
-      "本地初步解读：",
+      "牌面初读：",
       `- ${insight.title}`,
       `- ${insight.overview}`,
       `- 牌面结构：${insight.pattern}`,
-      `- 下一步：${insight.nextStep}`,
+      `- 落点：${insight.nextStep}`,
       "",
       "请按以下结构输出：",
-      "1. 整体主题",
-      "2. 每张牌在其位置上的含义",
-      "3. 牌与牌之间的关系",
-      "4. 可采取的具体行动",
-      "5. 3 个值得继续书写或思考的问题",
+      "1. 总体牌势",
+      "2. 逐张牌义",
+      "3. 牌与牌之间的力量关系",
+      "4. 关键判断",
+      "5. 可以怎么做",
       "",
-      "安全边界：不要把这次抽牌说成确定命运；不要给出医疗、法律、投资或重大财务确定性建议；请把它作为反思、视角整理和行动可能性的工具。"
+      "边界：不要把这次抽牌说成确定命运；不要给出医疗、法律、投资或重大财务确定性建议；不要在结尾另设问题清单或免责声明小节；行动建议用陈述句写清楚，不要用问题引导。"
     ].join("\n");
   }
 
   return [
-    "Act as a mature, clear tarot reflection guide. Help me interpret this reading as a tool for self-inquiry, not deterministic fortune telling.",
+    "Act as a mature, clear, experienced tarot reader. Help me interpret this spread without deterministic fortune telling.",
     "",
-    `Question: ${session.question || "No question was entered. Focus on the most useful present-tense reflection."}`,
+    `Question: ${session.question || "No question was entered. Focus on the most useful present-tense theme."}`,
     `Spread: ${text(session.spreadName, promptLocale)}`,
     `Output language: English`,
     `Tone: ${toneCopy[options.tone].en}`,
-    `Depth: ${options.depth === "deep" ? "deep analysis with structured insight, practical actions, and reflection questions" : "compact analysis with clear, actionable points"}`,
+    `Depth: ${options.depth === "deep" ? "deep card reading with spread shape, card-by-card meaning, force between the cards, and practical landing point" : "compact reading with clear, actionable points"}`,
     "",
     "Cards drawn:",
     ...lines,
     "",
-    "First-pass local interpretation:",
+    "First read from the card table:",
     `- ${insight.title}`,
     `- ${insight.overview}`,
     `- Pattern: ${insight.pattern}`,
-    `- Next step: ${insight.nextStep}`,
+    `- Landing point: ${insight.nextStep}`,
     "",
     "Please respond with:",
-    "1. Overall theme",
-    "2. Meaning of each card in its position",
-    "3. Relationship between the cards",
-    "4. Practical next actions",
-    "5. Three reflection questions for journaling",
+    "1. Overall shape",
+    "2. Card-by-card reading",
+    "3. The force between the cards",
+    "4. Key reading",
+    "5. What to do",
     "",
-    "Safety boundary: Do not present the reading as fixed fate. Do not give medical, legal, investment, or financial certainty. Focus on reflection, perspective, and possible actions."
+    "Boundary: Do not present the reading as fixed fate. Do not give medical, legal, investment, or financial certainty. Do not end with follow-up questions, journaling prompts, or a disclaimer section. Write practical guidance as declarative actions, not as questions."
   ].join("\n");
 }
 
@@ -109,7 +109,7 @@ export function readingToMarkdown(session: ReadingSession, locale: Locale): stri
     `# ${text(session.spreadName, locale)}`,
     "",
     `- Date: ${new Date(session.createdAt).toLocaleString()}`,
-    `- Question: ${session.question || "Untitled reflection"}`,
+    `- Question: ${session.question || (locale === "zh-CN" ? "未命名牌阵" : "Untitled reading")}`,
     "",
     "## Cards",
     ...rows,
@@ -123,9 +123,6 @@ export function readingToMarkdown(session: ReadingSession, locale: Locale): stri
     `**${locale === "zh-CN" ? "牌面结构" : "Pattern"}:** ${insight.pattern}`,
     "",
     `**${locale === "zh-CN" ? "下一步" : "Next step"}:** ${insight.nextStep}`,
-    "",
-    `## ${locale === "zh-CN" ? "继续书写" : "Journal Questions"}`,
-    ...insight.questions.map((question) => `- ${question}`),
     "",
     session.notes ? `## Notes\n${session.notes}\n` : "",
     session.aiResponse ? `## AI Response\n${session.aiResponse}\n` : ""

@@ -12,7 +12,7 @@
 - 不做登录，不做用户系统，不做后台记录页面。
 - 每个 IP 每天默认限制 20 次 AI 解读。
 - UI 不强调“公网 AI”“隐私说明”“后台记录”等开发者视角内容；用户自然知道 AI 解读需要发送问题和牌面。
-- 本地初步解读继续保留，AI 是更深一层，不是唯一价值。
+- 牌面初读继续保留，AI 是更深一层，不是唯一价值。
 
 ## 平台与成本判断
 
@@ -27,7 +27,7 @@
 
 ```text
 GitHub Pages frontend
-  -> Cloudflare Worker /api/tarot/analyze
+  -> Cloudflare Worker /api/tarot/analyze 或 /api/tarot/analyze/stream
   -> DeepSeek API
   -> KV or D1 daily IP counter
 ```
@@ -38,10 +38,10 @@ GitHub Pages frontend
 
 Cloudflare Worker 只做四件事：
 
-1. 接收问题、牌阵、牌面、朝向、本地初步解读和语言。
+1. 接收问题、牌阵、牌面、朝向、牌面初读和语言。
 2. 根据 IP 做每日计数，默认超过 20 次返回温和的限流响应。
 3. 用环境变量里的 `DEEPSEEK_API_KEY` 请求 DeepSeek。
-4. 返回结构化 AI 解读。
+4. 返回结构化 AI 解读；前端优先使用 SSE 流式输出。
 
 MVP 不需要：
 
@@ -94,7 +94,7 @@ MVP 不需要：
 避免：
 
 - 克制现代化
-- 面向自我反思的结构化工具
+- 面向练习表的产品说明
 - 后端记录
 - 公网 AI 提示
 - 隐私声明墙
@@ -105,7 +105,6 @@ MVP 不需要：
 - 生成 AI 解读
 - 重新抽
 - 保存这次解读
-- 继续追问
 - 今天的牌面
 - 先看牌意
 

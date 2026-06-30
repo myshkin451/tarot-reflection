@@ -40,34 +40,59 @@ function isAdvicePosition(id: string) {
   return id.includes("advice") || id.includes("outcome");
 }
 
+function positionPromptStatement(id: string, locale: Locale) {
+  const zh: Record<string, string> = {
+    focus: "这里指向此刻最值得注意的信号。",
+    situation: "这张牌勾勒出局面的真实形状。",
+    challenge: "它把张力、惯性或盲点摆到桌面上。",
+    advice: "它给出此刻更有帮助的行动方向。",
+    core: "它落在问题的核心处。",
+    "present-energy": "它描出当前正在运作的氛围和动能。",
+    "hidden-factor": "它提示水面下仍在影响局面的因素。",
+    "possible-outcome": "它显示当前模式延续时可能走向的方向。"
+  };
+  const en: Record<string, string> = {
+    focus: "This points to the clearest signal in the present moment.",
+    situation: "This card sketches the real shape of the situation.",
+    challenge: "It brings the tension, pattern, or blind spot onto the table.",
+    advice: "It gives the most useful practical orientation now.",
+    core: "It lands at the center of the question.",
+    "present-energy": "It describes the atmosphere and momentum currently active.",
+    "hidden-factor": "It points to what may still be working beneath the surface.",
+    "possible-outcome": "It shows where the current pattern may lead if it continues."
+  };
+
+  return locale === "zh-CN" ? (zh[id] ?? "") : (en[id] ?? "");
+}
+
 function buildPositionRead(drawn: DrawnCard, locale: Locale) {
   const cardName = text(drawn.card.name, locale);
   const positionName = text(drawn.position.name, locale);
   const meaning = text(drawn.card.meaning[drawn.orientation], locale);
-  const prompt = text(drawn.position.prompt, locale);
+  const prompt = positionPromptStatement(drawn.position.id, locale);
   const shadow = text(drawn.card.shadow, locale);
 
   if (locale === "zh-CN") {
     if (isChallengePosition(drawn.position.id)) {
-      return `放在「${positionName}」时，${cardName}提醒你看见一个容易被忽略的卡点：${shadow}。它不是要吓唬你，而是提示这里需要更多诚实和整理。${prompt}`;
+      return `放在「${positionName}」时，${cardName}提醒你看见一个容易被忽略的卡点：${shadow}。这不是坏兆头，而是牌面把紧绷处翻到了桌面上。${prompt}`;
     }
 
     if (isAdvicePosition(drawn.position.id)) {
       return `放在「${positionName}」时，${cardName}更像一个行动方向：${meaning} 可以先从一个小而明确的动作开始，不需要马上把整件事解决完。`;
     }
 
-    return `放在「${positionName}」时，${cardName}描述的是当前局面的入口：${meaning} 先把它当作观察角度，而不是最终判决。${prompt}`;
+    return `放在「${positionName}」时，${cardName}描述的是当前局面的入口：${meaning} 先顺着这个入口看下去，不急着把它当成最终结论。${prompt}`;
   }
 
   if (isChallengePosition(drawn.position.id)) {
-    return `In the ${positionName} position, ${cardName} points to a possible knot: ${shadow}. Treat it as something to examine honestly, not as a verdict. ${prompt}`;
+    return `In the ${positionName} position, ${cardName} points to a possible knot: ${shadow}. This is not a bad omen; it brings the tense part of the pattern onto the table. ${prompt}`;
   }
 
   if (isAdvicePosition(drawn.position.id)) {
     return `In the ${positionName} position, ${cardName} works as a practical direction: ${meaning} Start with one clear move instead of trying to solve the whole situation at once.`;
   }
 
-  return `In the ${positionName} position, ${cardName} names the doorway into the situation: ${meaning} Use it as a lens for observation, not as a final judgment. ${prompt}`;
+  return `In the ${positionName} position, ${cardName} names the doorway into the situation: ${meaning} Follow that doorway before treating it as a final conclusion. ${prompt}`;
 }
 
 function getDominantSuit(cards: DrawnCard[]) {
@@ -111,7 +136,7 @@ function buildPattern(session: ReadingSession, locale: Locale) {
     } else if (reversedCount > 0) {
       parts.push("少量逆位像提醒灯：有些地方需要慢一点、看细一点。");
     } else {
-      parts.push("全正位让信息更外显，适合直接转成行动或书写。");
+      parts.push("全正位让信息更外显，适合直接转成行动。");
     }
 
     return parts.join("");
@@ -130,7 +155,7 @@ function buildPattern(session: ReadingSession, locale: Locale) {
   } else if (reversedCount > 0) {
     parts.push(" The reversal works like a signal light: slow down and inspect that part with care.");
   } else {
-    parts.push(" With all cards upright, the message is more visible and easier to turn into action or journaling.");
+    parts.push(" With all cards upright, the message is more visible and easier to turn into action.");
   }
 
   return parts.join("");
@@ -165,28 +190,28 @@ export function buildReadingInsight(session: ReadingSession, locale: Locale): Re
 
   if (locale === "zh-CN") {
     return {
-      label: "本地初步解读",
+      label: "牌面初读",
       title: cardNotes.length === 1 ? `${first.cardName}：先抓住当下最清楚的信号` : `主线：从${first.cardName}走向${last.cardName}`,
       overview:
         cardNotes.length === 1
-          ? `这张牌先不急着给你一个确定答案，而是提供一个观察入口：${first.meaning} 如果你的问题是「${session.question || "当下我该看见什么"}」，可以先从这条线索开始写。`
-          : `这次牌阵可以先看成一条线：${first.positionName}里的${first.cardName}打开局面，${last.positionName}里的${last.cardName}指出它可能被带向哪里。它不是命运判词，而是一份可继续追问的地图。`,
+          ? `这张牌先不急着给你一个确定答案，而是露出一个入口：${first.meaning} 如果你的问题是「${session.question || "当下我该看见什么"}」，这就是最先值得看的线索。`
+          : `这次牌阵可以先看成一条线：${first.positionName}里的${first.cardName}打开局面，${last.positionName}里的${last.cardName}指出它可能被带向哪里。先看这条线的走向，再决定要不要进入更深的解读。`,
       pattern: buildPattern(session, locale),
-      nextStep: `下一步可以先落实「${adviceCard.positionName}」这张牌：${adviceCard.advice} 把它压缩成一个今天能完成的小动作，读牌才会真正变成帮助。`,
+      nextStep: `先看「${adviceCard.positionName}」这张牌的落点：${adviceCard.advice} 把它压缩成一个今天能完成的小动作，读牌才会真正变成帮助。`,
       cardNotes,
       questions: buildQuestions(cardNotes, locale)
     };
   }
 
   return {
-    label: "First-pass interpretation",
+    label: "First card read",
     title: cardNotes.length === 1 ? `${first.cardName}: start with the clearest signal` : `Theme: from ${first.cardName} toward ${last.cardName}`,
     overview:
       cardNotes.length === 1
-        ? `This card does not need to give a fixed answer. It gives you an entry point: ${first.meaning} If your question is "${session.question || "what should I notice now"}", start writing from this clue.`
-        : `Read this spread as a line of movement: ${first.cardName} in ${first.positionName} opens the situation, while ${last.cardName} in ${last.positionName} shows where the pattern may lead. It is a map for inquiry, not a verdict from fate.`,
+        ? `This card does not need to give a fixed answer. It gives you an entry point: ${first.meaning} If your question is "${session.question || "what should I notice now"}", this is the first clue to read.`
+        : `Read this spread as a line of movement: ${first.cardName} in ${first.positionName} opens the situation, while ${last.cardName} in ${last.positionName} shows where the pattern may lead. Read that movement first, then decide whether to go deeper.`,
     pattern: buildPattern(session, locale),
-    nextStep: `Start by grounding the ${adviceCard.positionName} card: ${adviceCard.advice} Compress that into one action you can actually take today.`,
+    nextStep: `Start with the landing point of ${adviceCard.positionName}: ${adviceCard.advice} Compress that into one action you can actually take today.`,
     cardNotes,
     questions: buildQuestions(cardNotes, locale)
   };

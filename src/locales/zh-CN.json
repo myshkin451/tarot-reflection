@@ -6,7 +6,7 @@
   },
   "hero": {
     "title": "Arcana Mirror",
-    "subtitle": "抽一组牌，先获得本地初步解读；想继续深入时，再把完整上下文交给 AI。",
+    "subtitle": "抽一组牌，先看牌面初读；想继续深入时，再让 AI 读出更完整的一层。",
     "start": "开始抽牌"
   },
   "flow": {
@@ -23,7 +23,7 @@
   "result": {
     "keywords": "关键词",
     "meaning": "含义",
-    "reflection": "反思问题",
+    "reflection": "牌面提示",
     "advice": "建议",
     "prompt": "AI 提示词生成器",
     "copy": "复制",
@@ -45,7 +45,7 @@
   },
   "cards": {
     "title": "牌义",
-    "subtitle": "每张牌包含正位、逆位、建议、阴影和书写问题；抽牌后可先用本地内容完成初步解读。",
+    "subtitle": "每张牌包含正位、逆位、建议和阴影；抽牌后不依赖 AI 也能先读出一层意思。",
     "upright": "正位",
     "reversed": "逆位"
   }

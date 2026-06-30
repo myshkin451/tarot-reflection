@@ -48,7 +48,7 @@ onMounted(() => {
       <section class="library-title">
         <h1>{{ locale === "zh-CN" ? "牌义" : "Card Meanings" }}</h1>
         <p>
-          {{ locale === "zh-CN" ? "每张牌都有正位、逆位、建议、阴影和书写问题；抽完牌后，不依赖 AI 也能先读出一层意思。" : "Each card includes upright and reversed meanings, advice, shadow notes, and journal questions for reading before AI." }}
+          {{ locale === "zh-CN" ? "每张牌都有正位、逆位、建议和阴影；抽完牌后，不依赖 AI 也能先读出一层意思。" : "Each card includes upright and reversed meanings, advice, and shadow notes for reading before AI." }}
         </p>
       </section>
 
@@ -88,10 +88,6 @@ onMounted(() => {
               <div>
                 <dt>{{ locale === "zh-CN" ? "阴影" : "Shadow" }}</dt>
                 <dd>{{ text(card.shadow, locale) }}</dd>
-              </div>
-              <div>
-                <dt>{{ locale === "zh-CN" ? "书写问题" : "Journal question" }}</dt>
-                <dd>{{ list(card.reflection, locale)[0] }}</dd>
               </div>
             </dl>
             <dl class="keyword-list">

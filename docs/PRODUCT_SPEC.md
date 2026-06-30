@@ -2,15 +2,15 @@
 
 ## Positioning
 
-Arcana Mirror is a calm tarot-based self-reflection tool. It should feel like a thoughtful writing and interpretation surface, not a cheap fortune-telling page.
+Arcana Mirror is a calm tarot reading tool. It should feel like a thoughtful card table with a good interpretation surface, not a cheap fortune-telling page.
 
-The first version is intentionally static. It does not need an AI backend to be useful because its core value is giving a local first-pass interpretation, then packaging the user's question, cards, positions, keywords, and interpretation requirements into a reusable prompt.
+The first version is intentionally static-first. It should remain useful without AI because its core value is giving a local card reading, then optionally packaging the user's question, cards, positions, keywords, and interpretation requirements into a reusable prompt.
 
 The next version should add direct AI interpretation without turning the app into a heavy account product. The intended flow is still simple: ask, draw, read the local meaning, then optionally generate a deeper AI reading.
 
 ## Audience
 
-- People who use tarot as a reflective or journaling practice
+- People who use tarot to clarify a situation or read the symbolic pattern in front of them
 - People who want a better prompt for AI-assisted interpretation
 - People who prefer private, no-login tools
 - Future visitors to a personal website tool page
@@ -21,8 +21,8 @@ The next version should add direct AI interpretation without turning the app int
 - Choose one of three spreads
 - Toggle reversed cards
 - Draw cards without duplicates
-- Display card positions, names, orientations, keywords, meanings, advice, and reflection questions
-- Display a local reading summary with an overall theme, pattern notes, next step, and journaling questions
+- Display card positions, names, orientations, keywords, meanings, advice, and shadow notes
+- Display a local reading summary with an overall theme, pattern notes, and practical landing point
 - Generate an AI prompt in English or Simplified Chinese
 - Copy or download the prompt
 - Save a reading to local journal storage
@@ -39,6 +39,7 @@ The next version should add direct AI interpretation without turning the app int
 ## V1.3 Scope
 
 - Add a server-side AI interpretation endpoint
+- Prefer streaming output through `/api/tarot/analyze/stream`
 - Use DeepSeek as the first provider
 - Keep frontend hosting static unless the personal website migration happens first
 - Limit each IP to 20 AI readings per day
@@ -46,7 +47,7 @@ The next version should add direct AI interpretation without turning the app int
 
 ## Non-Goals In V1
 
-- No backend
+- No browser-side provider keys
 - No direct AI API calls from the browser
 - No account system
 - No payments
