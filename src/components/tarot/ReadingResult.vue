@@ -85,55 +85,68 @@ async function generateAiReading() {
 
 <template>
   <section class="result-panel" aria-live="polite">
-    <div class="result-heading">
-      <div>
-        <p>{{ new Date(session.createdAt).toLocaleString(locale) }}</p>
-        <h2>{{ text(session.spreadName, locale) }}</h2>
-      </div>
-      <div class="result-actions">
-        <button type="button" @click="emit('save')">
-          {{ saved ? (locale === "zh-CN" ? "已保存" : "Saved") : (locale === "zh-CN" ? "保存" : "Save") }}
-        </button>
-        <button type="button" @click="exportMarkdown">
-          {{ locale === "zh-CN" ? "导出" : "Export" }}
-        </button>
-      </div>
-    </div>
-
-    <p v-if="session.question" class="question">“{{ session.question }}”</p>
-
-    <div class="drawn-grid" :class="`count-${session.cards.length}`">
-      <CardFace
-        v-for="(drawn, index) in session.cards"
-        :key="`${drawn.position.id}-${drawn.card.id}`"
-        :card="drawn.card"
-        :locale="locale"
-        :orientation="drawn.orientation"
-        :position="text(drawn.position.name, locale)"
-        reveal
-        :reveal-index="index"
-      />
-    </div>
-
-    <section class="reading-insight" aria-labelledby="insight-title">
-      <div class="insight-lead">
-        <span>{{ insight.label }}</span>
-        <h3 id="insight-title">{{ insight.title }}</h3>
-        <p>{{ insight.overview }}</p>
-      </div>
-      <div class="insight-grid">
-        <div>
-          <span>{{ locale === "zh-CN" ? "牌面结构" : "Pattern" }}</span>
-          <p>{{ insight.pattern }}</p>
+    <div class="result-chamber">
+      <div class="spread-table" :class="`count-${session.cards.length}`">
+        <div class="spread-meta">
+          <p>{{ new Date(session.createdAt).toLocaleString(locale) }}</p>
+          <h2>{{ text(session.spreadName, locale) }}</h2>
+          <p v-if="session.question" class="question">“{{ session.question }}”</p>
         </div>
-        <div>
-          <span>{{ locale === "zh-CN" ? "落点" : "Landing point" }}</span>
-          <p>{{ insight.nextStep }}</p>
+
+        <div class="drawn-constellation" :class="`count-${session.cards.length}`">
+          <article
+            v-for="(drawn, index) in session.cards"
+            :key="`${drawn.position.id}-${drawn.card.id}`"
+            class="drawn-card"
+            :style="{ '--card-index': index, '--card-count': session.cards.length }"
+          >
+            <CardFace
+              :card="drawn.card"
+              :locale="locale"
+              :orientation="drawn.orientation"
+              :position="text(drawn.position.name, locale)"
+              reveal
+              :reveal-index="index"
+            />
+            <div class="card-caption">
+              <span>{{ text(drawn.position.name, locale) }}</span>
+              <strong>{{ text(drawn.card.name, locale) }}</strong>
+            </div>
+          </article>
         </div>
       </div>
-    </section>
 
-    <div class="interpretations">
+      <aside class="reading-sheet" aria-labelledby="insight-title">
+        <div class="result-actions">
+          <button type="button" @click="emit('save')">
+            {{ saved ? (locale === "zh-CN" ? "已保存" : "Saved") : (locale === "zh-CN" ? "保存" : "Save") }}
+          </button>
+          <button type="button" @click="exportMarkdown">
+            {{ locale === "zh-CN" ? "导出" : "Export" }}
+          </button>
+        </div>
+
+        <section class="reading-insight">
+          <div class="insight-lead">
+            <span>{{ insight.label }}</span>
+            <h3 id="insight-title">{{ insight.title }}</h3>
+            <p>{{ insight.overview }}</p>
+          </div>
+          <div class="insight-grid">
+            <div>
+              <span>{{ locale === "zh-CN" ? "牌面结构" : "Pattern" }}</span>
+              <p>{{ insight.pattern }}</p>
+            </div>
+            <div>
+              <span>{{ locale === "zh-CN" ? "落点" : "Landing point" }}</span>
+              <p>{{ insight.nextStep }}</p>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="interpretation-ledger" :class="`count-${session.cards.length}`">
       <article v-for="note in insight.cardNotes" :key="`${note.drawn.position.id}-${note.drawn.card.id}`" class="interpretation">
         <div>
           <span>{{ note.positionName }} · {{ note.orientationLabel }}</span>
@@ -147,7 +160,7 @@ async function generateAiReading() {
         </div>
         <p class="shadow">{{ locale === "zh-CN" ? "需要留意：" : "Watch for: " }}{{ note.shadow }}</p>
       </article>
-    </div>
+    </section>
 
     <section v-if="aiEnabled || aiResponse || aiError" class="ai-reading" aria-labelledby="ai-reading-title">
       <div class="ai-reading-heading">
@@ -183,35 +196,106 @@ async function generateAiReading() {
       </p>
     </section>
 
-    <PromptBuilder :session="session" :locale="locale" />
+    <div class="prompt-dock">
+      <PromptBuilder :session="session" :locale="locale" />
+    </div>
   </section>
 </template>
 
 <style scoped>
 .result-panel {
   display: grid;
-  gap: 26px;
-  padding: clamp(22px, 3vw, 34px);
-  color: #20180f;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.1)),
-    #efe2c7;
-  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.3);
+  gap: clamp(22px, 3vw, 34px);
+  scroll-margin-top: 100px;
+  color: #f8f0de;
 }
 
-.result-heading {
-  display: flex;
-  gap: 16px;
+.result-chamber {
+  display: grid;
+  grid-template-columns: minmax(0, 1.28fr) minmax(330px, 0.72fr);
+  gap: clamp(18px, 2.4vw, 28px);
   align-items: start;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(32, 24, 15, 0.15);
-  padding-bottom: 20px;
 }
 
-.result-heading p {
+.spread-table,
+.reading-sheet,
+.ai-reading,
+.prompt-dock {
+  border: 1px solid rgba(216, 179, 111, 0.18);
+  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.28);
+}
+
+.spread-table {
+  position: sticky;
+  top: 84px;
+  overflow: hidden;
+  min-height: clamp(560px, 66vw, 760px);
+  padding: clamp(20px, 3vw, 34px);
+  background:
+    radial-gradient(circle at 50% 48%, rgba(216, 179, 111, 0.12), transparent 30%),
+    radial-gradient(circle at 20% 80%, rgba(111, 136, 150, 0.14), transparent 34%),
+    linear-gradient(90deg, rgba(248, 240, 222, 0.036) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(248, 240, 222, 0.028) 1px, transparent 1px),
+    #0d0d0f;
+  background-size:
+    auto,
+    auto,
+    48px 48px,
+    48px 48px,
+    auto;
+}
+
+.spread-table::before,
+.spread-table::after {
+  position: absolute;
+  content: "";
+  pointer-events: none;
+}
+
+.spread-table::before {
+  inset: 14%;
+  border: 1px solid rgba(216, 179, 111, 0.18);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 45%, rgba(216, 179, 111, 0.08) 46%, transparent 47%),
+    radial-gradient(circle, transparent 66%, rgba(216, 179, 111, 0.08) 67%, transparent 68%);
+}
+
+.spread-table::after {
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(248, 240, 222, 0.07), transparent 17%, transparent 78%, rgba(0, 0, 0, 0.36)),
+    radial-gradient(circle at 50% 42%, transparent 0 43%, rgba(216, 179, 111, 0.08) 43.4%, transparent 44%);
+  opacity: 0.84;
+}
+
+.spread-meta,
+.drawn-constellation {
+  position: relative;
+  z-index: 1;
+}
+
+.spread-meta {
+  display: flex;
+  gap: 14px;
+  align-items: end;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(216, 179, 111, 0.16);
+  padding-bottom: 18px;
+}
+
+.spread-meta p {
   margin: 0 0 8px;
-  color: rgba(32, 24, 15, 0.62);
+  color: rgba(216, 179, 111, 0.72);
   font: 650 12px/1 var(--font-ui);
+}
+
+.spread-meta .question {
+  max-width: 320px;
+  margin: 0;
+  color: rgba(248, 240, 222, 0.68);
+  font: 500 14px/1.5 var(--font-ui);
+  text-align: right;
 }
 
 h2,
@@ -221,6 +305,7 @@ h3 {
 }
 
 h2 {
+  color: #f8f0de;
   font: 700 clamp(30px, 4vw, 48px) / 0.98 var(--font-display);
 }
 
@@ -228,10 +313,89 @@ h3 {
   font: 700 24px/1.05 var(--font-display);
 }
 
+.drawn-constellation {
+  display: grid;
+  gap: clamp(14px, 2vw, 20px);
+  align-items: center;
+  min-height: clamp(430px, 54vw, 610px);
+  padding-top: clamp(24px, 4vw, 48px);
+}
+
+.drawn-constellation.count-1 {
+  grid-template-columns: minmax(230px, 330px);
+  justify-content: center;
+}
+
+.drawn-constellation.count-3 {
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
+}
+
+.drawn-constellation.count-5 {
+  grid-template-columns: repeat(5, minmax(112px, 1fr));
+}
+
+.drawn-card {
+  --card-index: 0;
+  --card-count: 1;
+  display: grid;
+  gap: 12px;
+  align-self: center;
+  animation: card-settle 720ms cubic-bezier(0.18, 0.85, 0.18, 1) both;
+  animation-delay: calc(var(--card-index) * 95ms);
+}
+
+.drawn-card:nth-child(even) {
+  transform: translateY(28px);
+}
+
+.drawn-card :deep(.tarot-card) {
+  min-height: 0;
+  filter: drop-shadow(0 30px 34px rgba(0, 0, 0, 0.42));
+}
+
+.drawn-card :deep(.card-frame) {
+  box-shadow:
+    0 1px 0 rgba(248, 240, 222, 0.2),
+    0 28px 70px rgba(0, 0, 0, 0.48);
+}
+
+.card-caption {
+  display: grid;
+  gap: 4px;
+  text-align: center;
+}
+
+.card-caption span {
+  color: rgba(216, 179, 111, 0.74);
+  font: 800 10px/1 var(--font-ui);
+  text-transform: uppercase;
+}
+
+.card-caption strong {
+  color: rgba(248, 240, 222, 0.9);
+  font: 650 18px/1 var(--font-display);
+}
+
+.reading-sheet,
+.prompt-dock {
+  color: #20180f;
+  background:
+    linear-gradient(110deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.1)),
+    radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.24), transparent 28%),
+    #efe2c7;
+}
+
+.reading-sheet {
+  display: grid;
+  gap: 22px;
+  padding: clamp(20px, 3vw, 28px);
+}
+
 .result-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  justify-content: end;
 }
 
 button {
@@ -244,28 +408,9 @@ button {
   cursor: pointer;
 }
 
-.question {
-  margin: 0;
-  max-width: 720px;
-  color: rgba(32, 24, 15, 0.76);
-  font: 500 18px/1.5 var(--font-ui);
-}
-
-.drawn-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 16px;
-}
-
-.drawn-grid.count-1 {
-  max-width: 280px;
-}
-
 .reading-insight {
   display: grid;
   gap: 20px;
-  border-block: 1px solid rgba(32, 24, 15, 0.14);
-  padding: 24px 0;
 }
 
 .insight-lead {
@@ -303,16 +448,25 @@ button {
   background: rgba(255, 255, 255, 0.25);
 }
 
-.interpretations {
+.interpretation-ledger {
   display: grid;
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(216, 179, 111, 0.16);
+  background: rgba(216, 179, 111, 0.16);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
 }
 
 .interpretation {
   display: grid;
   gap: 12px;
-  border-top: 1px solid rgba(32, 24, 15, 0.13);
-  padding-top: 18px;
+  align-content: start;
+  padding: clamp(18px, 2.3vw, 24px);
+  color: #20180f;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.27), rgba(255, 255, 255, 0.08)),
+    #efe2c7;
 }
 
 .interpretation span {
@@ -361,11 +515,11 @@ button {
 .ai-reading {
   display: grid;
   gap: 16px;
-  border: 1px solid rgba(32, 24, 15, 0.14);
   padding: clamp(18px, 3vw, 24px);
+  color: #20180f;
   background:
-    linear-gradient(135deg, rgba(32, 24, 15, 0.06), rgba(151, 89, 52, 0.08)),
-    rgba(255, 255, 255, 0.22);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(151, 89, 52, 0.08)),
+    #efe2c7;
 }
 
 .ai-reading-heading {
@@ -453,17 +607,64 @@ button {
   font-weight: 800;
 }
 
-@media (max-width: 700px) {
-  .result-heading {
-    display: grid;
+.prompt-dock {
+  padding: clamp(18px, 3vw, 24px);
+}
+
+@keyframes card-settle {
+  from {
+    opacity: 0;
+    transform: translateY(42px) rotateX(14deg) scale(0.96);
   }
 
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg) scale(1);
+  }
+}
+
+@media (max-width: 900px) {
+  .result-chamber,
+  .spread-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .result-chamber,
+  .spread-meta,
   .ai-reading-heading {
     display: grid;
   }
 
+  .spread-table {
+    position: relative;
+    top: auto;
+    min-height: auto;
+  }
+
+  .spread-meta .question {
+    max-width: none;
+    text-align: left;
+  }
+
+  .drawn-constellation,
+  .drawn-constellation.count-3,
+  .drawn-constellation.count-5 {
+    grid-template-columns: repeat(auto-fit, minmax(136px, 1fr));
+    min-height: auto;
+  }
+
+  .drawn-card:nth-child(even) {
+    transform: none;
+  }
+
   .insight-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawn-card {
+    animation: none;
   }
 }
 </style>

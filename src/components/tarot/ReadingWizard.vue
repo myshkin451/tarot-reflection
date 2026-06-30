@@ -30,6 +30,22 @@ let drawToken = 0;
 
 const selectedSpread = computed(() => getSpread(selectedSpreadId.value));
 const firstCard = computed(() => session.value?.cards[0]);
+const drawSlots = computed(() => {
+  const positions = selectedSpread.value.positions;
+  const center = (positions.length - 1) / 2;
+
+  return positions.map((position, index) => {
+    const offset = index - center;
+
+    return {
+      id: position.id,
+      x: offset * 88,
+      y: Math.abs(offset) * 10,
+      angle: offset * 5,
+      index
+    };
+  });
+});
 
 function makeId() {
   if (globalThis.crypto?.randomUUID) {
@@ -70,7 +86,7 @@ async function createReading() {
   saved.value = false;
 
   await new Promise((resolve) => {
-    window.setTimeout(resolve, 860);
+    window.setTimeout(resolve, 1540);
   });
 
   if (token !== drawToken) {
@@ -166,6 +182,7 @@ onBeforeUnmount(() => {
 
           <section class="deck-stage" aria-label="Deck preview">
             <div v-if="isDrawing" class="shuffle-stage" aria-live="polite">
+              <div class="stage-orbit" aria-hidden="true" />
               <div class="shuffle-stack" aria-hidden="true">
                 <span
                   v-for="index in shuffleCards"
@@ -177,6 +194,20 @@ onBeforeUnmount(() => {
                     '--card-x': `${(index - 3) * 22}px`,
                     '--card-y': `${(index - 3) * 4}px`,
                     '--card-delay': `${index * -70}ms`,
+                    '--deck-back-image': `url(${deckBack.image})`
+                  }"
+                />
+              </div>
+              <div class="deal-run" aria-hidden="true">
+                <span
+                  v-for="slot in drawSlots"
+                  :key="slot.id"
+                  class="deal-card"
+                  :style="{
+                    '--slot-index': slot.index,
+                    '--slot-x': `${slot.x}px`,
+                    '--slot-y': `${slot.y}px`,
+                    '--slot-angle': `${slot.angle}deg`,
                     '--deck-back-image': `url(${deckBack.image})`
                   }"
                 />
@@ -418,10 +449,40 @@ input[type="checkbox"] {
   min-height: 450px;
   overflow: hidden;
   padding: clamp(18px, 3vw, 34px);
+  isolation: isolate;
   background:
-    radial-gradient(circle at 70% 20%, rgba(111, 136, 150, 0.16), transparent 28%),
-    linear-gradient(135deg, rgba(239, 226, 199, 0.08), rgba(239, 226, 199, 0.02)),
+    radial-gradient(circle at 72% 18%, rgba(216, 179, 111, 0.14), transparent 24%),
+    radial-gradient(circle at 24% 78%, rgba(111, 136, 150, 0.18), transparent 32%),
+    linear-gradient(135deg, rgba(239, 226, 199, 0.075), rgba(239, 226, 199, 0.018)),
     rgba(239, 226, 199, 0.035);
+}
+
+.deck-stage::before,
+.deck-stage::after {
+  position: absolute;
+  z-index: -1;
+  content: "";
+  pointer-events: none;
+}
+
+.deck-stage::before {
+  inset: 42px 9%;
+  border: 1px solid rgba(216, 179, 111, 0.14);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 39%, rgba(216, 179, 111, 0.08) 40%, transparent 41%),
+    radial-gradient(circle, transparent 61%, rgba(216, 179, 111, 0.07) 62%, transparent 63%);
+  opacity: 0.78;
+}
+
+.deck-stage::after {
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(248, 240, 222, 0.035) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(248, 240, 222, 0.024) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(circle at 52% 48%, black, transparent 78%);
+  opacity: 0.55;
 }
 
 .shuffle-stage {
@@ -434,10 +495,35 @@ input[type="checkbox"] {
   padding: 34px;
 }
 
+.stage-orbit {
+  position: absolute;
+  width: min(420px, 78vw);
+  aspect-ratio: 1;
+  border: 1px solid rgba(216, 179, 111, 0.16);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 42px rgba(216, 179, 111, 0.018),
+    inset 0 0 0 86px rgba(216, 179, 111, 0.02);
+  animation: orbit-breathe 1540ms ease-in-out both;
+}
+
 .shuffle-stack {
   position: relative;
   width: min(360px, 76vw);
   aspect-ratio: 1.35;
+}
+
+.shuffle-stack::before {
+  position: absolute;
+  top: 57%;
+  left: 50%;
+  width: clamp(92px, 14vw, 140px);
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.42);
+  filter: blur(9px);
+  transform: translate(-50%, -50%);
+  content: "";
 }
 
 .shuffle-card {
@@ -458,14 +544,63 @@ input[type="checkbox"] {
     #111012;
   background-position: center;
   background-size: cover;
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.38);
+  box-shadow:
+    0 1px 0 rgba(248, 240, 222, 0.18),
+    0 18px 48px rgba(0, 0, 0, 0.38);
   transform: translate(-50%, -50%) rotate(var(--card-angle));
-  animation: shuffle-card 860ms cubic-bezier(0.22, 0.88, 0.2, 1) infinite;
+  transform-style: preserve-3d;
+  animation: shuffle-card 770ms cubic-bezier(0.22, 0.88, 0.2, 1) infinite;
   animation-delay: var(--card-delay);
+}
+
+.shuffle-card::after,
+.deal-card::after {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(248, 240, 222, 0.09);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 28%, transparent 72%, rgba(0, 0, 0, 0.18));
+  content: "";
+  pointer-events: none;
+}
+
+.deal-run {
+  position: absolute;
+  right: 8%;
+  bottom: clamp(70px, 14%, 92px);
+  left: 8%;
+  height: 156px;
+}
+
+.deal-card {
+  --slot-index: 0;
+  --slot-x: 0px;
+  --slot-y: 0px;
+  --slot-angle: 0deg;
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  width: clamp(56px, 8vw, 78px);
+  aspect-ratio: 2 / 3.18;
+  border: 1px solid rgba(216, 179, 111, 0.66);
+  background:
+    linear-gradient(180deg, rgba(11, 10, 9, 0.04), rgba(11, 10, 9, 0.2)),
+    var(--deck-back-image),
+    #111012;
+  background-position: center;
+  background-size: cover;
+  box-shadow:
+    0 1px 0 rgba(248, 240, 222, 0.16),
+    0 16px 38px rgba(0, 0, 0, 0.36);
+  opacity: 0;
+  transform: translate(-50%, -120%) scale(0.7) rotate(-8deg);
+  animation: deal-card 980ms cubic-bezier(0.18, 0.9, 0.18, 1) both;
+  animation-delay: calc(360ms + var(--slot-index) * 92ms);
 }
 
 .shuffle-stage p {
   margin: 0;
+  position: relative;
+  z-index: 2;
   color: rgba(248, 240, 222, 0.72);
   font: 650 14px/1.5 var(--font-ui);
   text-align: center;
@@ -479,6 +614,28 @@ input[type="checkbox"] {
   gap: 16px;
   align-items: center;
   justify-content: center;
+}
+
+.preview-fan::before {
+  position: absolute;
+  inset: 10% 12%;
+  border: 1px solid rgba(216, 179, 111, 0.16);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(216, 179, 111, 0.12), transparent 2px),
+    radial-gradient(circle, transparent 52%, rgba(216, 179, 111, 0.08) 53%, transparent 54%);
+  background-size: 26px 26px, 100% 100%;
+  content: "";
+  opacity: 0.46;
+}
+
+.preview-fan :deep(.tarot-card) {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.34));
+  transition:
+    filter 220ms ease,
+    transform 260ms ease;
 }
 
 .preview-fan :deep(.tarot-card:nth-child(1)) {
@@ -557,7 +714,6 @@ input[type="checkbox"] {
 }
 
 @media (max-width: 900px) {
-  .site-header,
   .reading-copy,
   .reading-board,
   .live-focus {
@@ -566,10 +722,16 @@ input[type="checkbox"] {
 
   .site-header {
     position: static;
+    grid-template-columns: 1fr auto;
   }
 
   nav {
+    grid-column: 1 / -1;
     justify-content: start;
+  }
+
+  .site-header :deep(.language-switcher) {
+    justify-self: end;
   }
 
   .reading-hero {
@@ -577,7 +739,7 @@ input[type="checkbox"] {
   }
 
   h1 {
-    font-size: clamp(58px, 20vw, 96px);
+    font-size: clamp(50px, 15vw, 92px);
   }
 
   .deck-stage {
@@ -602,15 +764,52 @@ input[type="checkbox"] {
 
 @keyframes shuffle-card {
   0% {
-    transform: translate(-50%, -50%) rotate(var(--card-angle));
+    transform: translate(-50%, -50%) rotate(var(--card-angle)) rotateY(0deg);
   }
 
   48% {
-    transform: translate(calc(-50% + var(--card-x)), calc(-58% + var(--card-y))) rotate(var(--card-angle-alt));
+    transform: translate(calc(-50% + var(--card-x)), calc(-58% + var(--card-y))) rotate(var(--card-angle-alt)) rotateY(12deg);
   }
 
   100% {
-    transform: translate(-50%, -50%) rotate(var(--card-angle));
+    transform: translate(-50%, -50%) rotate(var(--card-angle)) rotateY(0deg);
+  }
+}
+
+@keyframes deal-card {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -130%) scale(0.7) rotate(-12deg) rotateY(58deg);
+  }
+
+  28% {
+    opacity: 1;
+  }
+
+  72% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--slot-x)), calc(-50% + var(--slot-y))) scale(1.02) rotate(var(--slot-angle)) rotateY(0deg);
+  }
+
+  100% {
+    opacity: 0.88;
+    transform: translate(calc(-50% + var(--slot-x)), calc(-50% + var(--slot-y))) scale(1) rotate(var(--slot-angle)) rotateY(0deg);
+  }
+}
+
+@keyframes orbit-breathe {
+  from {
+    opacity: 0;
+    transform: scale(0.84) rotate(-8deg);
+  }
+
+  55% {
+    opacity: 0.7;
+  }
+
+  to {
+    opacity: 0.36;
+    transform: scale(1.08) rotate(8deg);
   }
 }
 
@@ -640,6 +839,8 @@ input[type="checkbox"] {
 
 @media (prefers-reduced-motion: reduce) {
   .shuffle-card,
+  .deal-card,
+  .stage-orbit,
   .live-focus,
   .live-focus :deep(.card-frame) {
     animation: none;
