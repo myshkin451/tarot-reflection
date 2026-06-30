@@ -11,6 +11,7 @@
 - Added optional Cloudflare Worker AI endpoint, D1 reading logs, IP daily limits, and frontend AI reading client.
 - Added the first Arcana Mirror Deck assets: formal card back, The Fool, The Magician, and The High Priestess samples with a deck manifest and image-aware card rendering.
 - Reworked the draw table motion and result layout so the deck, dealt cards, and interpretation surface feel more tactile and visually central.
+- Completed the Arcana Mirror Deck major arcana with 19 additional formal card faces, bringing all 22 major cards onto finished artwork while preserving minor-arcana fallback rendering.
 
 ## 0.1.0
 

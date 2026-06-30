@@ -1,8 +1,5 @@
 import deckManifest from "@/assets/decks/arcana-mirror/manifest.json";
 import cardBackImage from "@/assets/decks/arcana-mirror/card-back.webp";
-import theFoolImage from "@/assets/decks/arcana-mirror/cards/the-fool.webp";
-import theHighPriestessImage from "@/assets/decks/arcana-mirror/cards/the-high-priestess.webp";
-import theMagicianImage from "@/assets/decks/arcana-mirror/cards/the-magician.webp";
 
 type LocalizedAssetText = {
   en: string;
@@ -28,11 +25,17 @@ export type DeckImageAsset = (ManifestCardAsset | ManifestCardBackAsset) & {
   image: string;
 };
 
-const cardImages = {
-  "the-fool": theFoolImage.src,
-  "the-magician": theMagicianImage.src,
-  "the-high-priestess": theHighPriestessImage.src
-} as const;
+const cardImageModules = import.meta.glob<{ default: { src: string } }>(
+  "../assets/decks/arcana-mirror/cards/*.webp",
+  { eager: true }
+);
+
+const cardImages: Record<string, string | undefined> = Object.fromEntries(
+  Object.entries(cardImageModules).map(([path, module]) => [
+    path.split("/").pop()?.replace(".webp", ""),
+    module.default.src
+  ])
+);
 
 const manifestCards = deckManifest.cards as Record<string, ManifestCardAsset>;
 
@@ -47,7 +50,7 @@ export function getDeckBackAsset(): DeckImageAsset {
 
 export function getDeckCardAsset(cardId: string): DeckImageAsset | undefined {
   const asset = manifestCards[cardId];
-  const image = cardImages[cardId as keyof typeof cardImages];
+  const image = cardImages[cardId];
 
   if (!asset || !image) {
     return undefined;

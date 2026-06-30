@@ -23,8 +23,11 @@
 - Add a tactile deck stack with visible card depth
 - Replace the current abstract draw moment with shuffle, fan, deal, flip, and settle motion
 - Create 3 major-arcana sample assets to lock the art direction
+- Complete the 22 major-arcana formal card faces after the sample direction is stable
 - Move toward a result layout where cards remain visually present while interpretation appears
 - Keep UI copy natural and user-facing; remove developer-facing positioning phrases
+
+Status as of 2026-06-30: the card back, draw motion, result layout, and all 22 major-arcana formal card faces are complete.
 
 ## V1.3 Backend-Assisted Analysis
 
@@ -52,7 +55,6 @@ See [AI Backend Plan](AI_BACKEND.md) for the recommended DeepSeek proxy shape.
 
 ## V1.4 Deck Expansion
 
-- Generate or hand-curate the 22 major-arcana card faces after the first samples are approved
 - Build a code-native suit/rank system for minor arcana
 - Decide later whether all 56 minor arcana need full illustrations
 - Keep the deck original rather than copying commercial or Rider-Waite-Smith artwork

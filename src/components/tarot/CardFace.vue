@@ -112,6 +112,10 @@ const cardAssetAlt = computed(() => {
   background: #0b0a09;
 }
 
+.tarot-card.compact:not(.has-art) .card-frame {
+  padding: 14px 10px;
+}
+
 .tarot-card:hover .card-frame {
   border-color: rgba(248, 240, 222, 0.86);
   box-shadow: 0 28px 80px rgba(0, 0, 0, 0.5);
@@ -174,6 +178,10 @@ const cardAssetAlt = computed(() => {
   color: rgba(216, 179, 111, 0.9);
 }
 
+.tarot-card.compact:not(.has-art) .card-corner {
+  font-size: 11px;
+}
+
 .card-orbit {
   position: absolute;
   inset: 28px;
@@ -209,6 +217,13 @@ const cardAssetAlt = computed(() => {
   place-self: center;
   font: 500 clamp(42px, 7vw, 72px) / 1 var(--font-display);
   color: #d8b36f;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.tarot-card.compact:not(.has-art) .card-sigil {
+  font-size: clamp(26px, 4vw, 36px);
 }
 
 .card-name,
@@ -222,6 +237,12 @@ const cardAssetAlt = computed(() => {
 .card-name {
   margin-top: auto;
   font: 600 20px/1.05 var(--font-display);
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.tarot-card.compact:not(.has-art) .card-name {
+  font-size: clamp(15px, 3vw, 18px);
 }
 
 .tarot-card.has-art .card-name {

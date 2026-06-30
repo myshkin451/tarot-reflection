@@ -33,6 +33,8 @@ The next version should add direct AI interpretation without turning the app int
 
 - Replace abstract card faces with a more tactile deck presentation
 - Add an original card back design and richer major-arcana visual language
+- Complete formal artwork for all 22 major-arcana cards
+- Keep minor arcana on the existing fallback system until their suit/rank visual language is ready
 - Make the draw flow feel physical: shuffle, fan, deal, flip, and settle
 - Keep the result layout focused on cards plus interpretation, not product explanation
 
@@ -78,4 +80,6 @@ Avoid developer-facing product language in the UI. The interface should say "dra
 - Prompt Builder includes the local card reading so external AI starts from richer context
 - Journal can save and display readings locally
 - `/cards` displays all 78 cards
+- All 22 major-arcana cards use finished Arcana Mirror artwork
+- Minor-arcana cards continue to display usable fallback faces
 - English and Simplified Chinese UI are both usable

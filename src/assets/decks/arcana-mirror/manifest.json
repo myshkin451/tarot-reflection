@@ -1,8 +1,8 @@
 {
   "id": "arcana-mirror",
   "name": "Arcana Mirror Deck",
-  "version": "0.1.0",
-  "stage": "phase-1-major-samples",
+  "version": "0.2.0",
+  "stage": "phase-2-major-complete",
   "generatedAt": "2026-06-30",
   "generator": "Codex built-in image_gen",
   "dimensions": {
@@ -62,6 +62,196 @@
         "zh": "女祭司立于月光圣所，身侧是素净石柱，怀中抱着闭合的书，前方有黑曜石镜池。"
       },
       "promptFocus": "Intuition, silence, moonlit sanctuary, closed blank book, obsidian mirror-pool."
+    },
+    "the-empress": {
+      "id": "the-empress",
+      "src": "./cards/the-empress.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The Empress as a sovereign garden-maker seated in a moonlit conservatory beside a dark mirror basin.",
+        "zh": "皇后是一位坐在月光温室中的花园主宰，身旁有黑色镜盆与安静藤蔓。"
+      },
+      "promptFocus": "Nourishment, beauty, growth, moonlit conservatory, dark mirror basin, restrained vines."
+    },
+    "the-emperor": {
+      "id": "the-emperor",
+      "src": "./cards/the-emperor.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The Emperor as a stern architect-ruler beside a basalt drafting table and a small dark mirror disk.",
+        "zh": "皇帝是一位冷静的建筑师君主，坐在玄武岩制图桌旁，身侧有小型黑镜圆盘。"
+      },
+      "promptFocus": "Structure, authority, boundaries, basalt drafting table, dark mirror disk, disciplined geometry."
+    },
+    "the-hierophant": {
+      "id": "the-hierophant",
+      "src": "./cards/the-hierophant.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The Hierophant as an elder ritual teacher in a candlelit archive with blank books and unmarked keys.",
+        "zh": "教皇是一位烛光档案室中的年长仪式导师，周围有空白书册与无标记钥匙。"
+      },
+      "promptFocus": "Tradition, learning, shared values, candlelit archive, blank books, unmarked keys."
+    },
+    "the-lovers": {
+      "id": "the-lovers",
+      "src": "./cards/the-lovers.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The Lovers as two figures almost touching over a narrow mirror-pool in a dark walled garden.",
+        "zh": "恋人是暗色围墙花园中隔着窄镜池几乎相触的两个人。"
+      },
+      "promptFocus": "Choice, alignment, relationship, two figures, narrow mirror-pool, eclipse-like gold ring."
+    },
+    "the-chariot": {
+      "id": "the-chariot",
+      "src": "./cards/the-chariot.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The Chariot as a poised traveler guiding opposing stone-horse silhouettes across a wet obsidian causeway.",
+        "zh": "战车是一位沉着旅者驾驭相对的石马剪影，穿过湿润的黑曜石长路。"
+      },
+      "promptFocus": "Direction, discipline, momentum, ceremonial chariot, opposing stone horses, obsidian causeway."
+    },
+    "strength": {
+      "id": "strength",
+      "src": "./cards/strength.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "Strength as a calm figure touching a resting shadow-lion beside a small oval mirror.",
+        "zh": "力量是一位平静人物轻触休憩的影狮，身旁有一面小椭圆镜。"
+      },
+      "promptFocus": "Courage, patience, soft power, resting lion, gentle touch, oval mirror."
+    },
+    "the-hermit": {
+      "id": "the-hermit",
+      "src": "./cards/the-hermit.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The Hermit as a solitary hooded seeker holding a lantern on a black-stone mountain ridge.",
+        "zh": "隐士是一位披着斗篷的独行求索者，在黑石山脊上举着灯。"
+      },
+      "promptFocus": "Solitude, discernment, guidance, hooded seeker, lantern, black-stone ridge."
+    },
+    "wheel-of-fortune": {
+      "id": "wheel-of-fortune",
+      "src": "./cards/wheel-of-fortune.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "Wheel of Fortune as a great antique orrery-wheel turned by several hands above a black mirror pool.",
+        "zh": "命运之轮是一座巨大的古董天体仪轮，由数只手在黑色镜池上方转动。"
+      },
+      "promptFocus": "Change, cycles, timing, antique orrery-wheel, turning hands, black mirror pool."
+    },
+    "justice": {
+      "id": "justice",
+      "src": "./cards/justice.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "Justice as a composed figure holding balanced scales and a narrow mirror-bright blade before dark mirrors.",
+        "zh": "正义是一位沉着人物，在暗镜前持着天平和细长明亮的镜刃。"
+      },
+      "promptFocus": "Truth, accountability, balance, scales, mirror-bright blade, dark mirror panels."
+    },
+    "the-hanged-man": {
+      "id": "the-hanged-man",
+      "src": "./cards/the-hanged-man.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The Hanged Man as a serene inverted figure suspended from a crescent stone arch above a mirror pool.",
+        "zh": "倒吊人是一位安宁倒悬的人物，悬在新月形石拱与镜池上方。"
+      },
+      "promptFocus": "Pause, surrender, new perspective, inverted figure, crescent stone arch, mirror pool."
+    },
+    "death": {
+      "id": "death",
+      "src": "./cards/death.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "Death as a quiet cloaked rider moving through a winter garden toward a black mirror gate.",
+        "zh": "死神是一位静默披篷骑者，穿过冬日花园走向黑色镜门。"
+      },
+      "promptFocus": "Ending, release, transformation, cloaked rider, winter garden, black mirror gate."
+    },
+    "temperance": {
+      "id": "temperance",
+      "src": "./cards/temperance.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "Temperance as a composed alchemist pouring liquid between plain vessels beside a black mirror-pool.",
+        "zh": "节制是一位沉着炼金者，在黑色镜池旁于两个素净容器之间倾倒液体。"
+      },
+      "promptFocus": "Integration, moderation, healing, alchemist, two unmarked vessels, black mirror-pool."
+    },
+    "the-devil": {
+      "id": "the-devil",
+      "src": "./cards/the-devil.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The Devil as a refined horned shadow figure in an underground mirror chamber with loose velvet ribbons.",
+        "zh": "恶魔是一位精致的角形阴影人物，位于地下镜室中，前方有松散丝绒带。"
+      },
+      "promptFocus": "Attachment, compulsion, shadow, horned shadow figure, obsidian mirror table, loose ribbons."
+    },
+    "the-tower": {
+      "id": "the-tower",
+      "src": "./cards/the-tower.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The Tower as an obsidian observatory cracked by white-gold lightning above storm-dark water.",
+        "zh": "高塔是一座被白金闪电劈裂的黑曜石观测塔，立于风暴般的暗水之上。"
+      },
+      "promptFocus": "Disruption, truth, collapse, obsidian observatory, white-gold lightning, mirror shards."
+    },
+    "the-star": {
+      "id": "the-star",
+      "src": "./cards/the-star.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The Star as a solitary stargazer beside a black mirror-lake under a guiding star.",
+        "zh": "星星是一位黑色镜湖旁的独行观星者，头顶有一颗指引之星。"
+      },
+      "promptFocus": "Hope, renewal, guidance, stargazer, black mirror-lake, guiding star."
+    },
+    "the-moon": {
+      "id": "the-moon",
+      "src": "./cards/the-moon.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The Moon as a misty black-stone path between mirror pools under a large crescent moon.",
+        "zh": "月亮是一条雾中的黑石小径，穿过两片镜池，头顶有巨大的新月。"
+      },
+      "promptFocus": "Uncertainty, dreams, projection, crescent moon, mirror pools, misty black-stone path."
+    },
+    "the-sun": {
+      "id": "the-sun",
+      "src": "./cards/the-sun.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The Sun as a radiant disk reflected in a mirror fountain while a young figure opens a dark cloak.",
+        "zh": "太阳是一轮映在镜泉中的明亮日盘，一位年轻人物向光展开暗色披风。"
+      },
+      "promptFocus": "Clarity, vitality, joy, radiant sun disk, mirror fountain, opening dark cloak."
+    },
+    "judgement": {
+      "id": "judgement",
+      "src": "./cards/judgement.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "Judgement as quiet figures rising from a dark mirror-lake beneath a bronze bell and dawn light.",
+        "zh": "审判是几位安静人物从黑色镜湖中醒来，上方悬着青铜钟与黎明光。"
+      },
+      "promptFocus": "Calling, review, awakening, figures rising, bronze bell, dark mirror-lake."
+    },
+    "the-world": {
+      "id": "the-world",
+      "src": "./cards/the-world.webp",
+      "arcana": "major",
+      "alt": {
+        "en": "The World as a graceful figure standing inside an oval mirror-ring with vines, stars, and elemental emblems.",
+        "zh": "世界是一位优雅人物站在椭圆镜环中，周围有藤蔓、星辰与元素象征。"
+      },
+      "promptFocus": "Completion, integration, belonging, oval mirror-ring, vines, stars, elemental emblems."
     }
   }
 }
