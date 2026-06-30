@@ -59,9 +59,9 @@ function downloadPrompt() {
     <label>
       <span>{{ locale === "zh-CN" ? "语气" : "Tone" }}</span>
       <select v-model="tone">
-        <option value="calm">{{ locale === "zh-CN" ? "克制反思" : "Calm reflective" }}</option>
+        <option value="calm">{{ locale === "zh-CN" ? "清晰反思" : "Clear reflective" }}</option>
         <option value="practical">{{ locale === "zh-CN" ? "务实行动" : "Practical" }}</option>
-        <option value="gentle">{{ locale === "zh-CN" ? "温和细腻" : "Gentle" }}</option>
+        <option value="gentle">{{ locale === "zh-CN" ? "温和陪伴" : "Gentle" }}</option>
       </select>
     </label>
     <textarea :value="prompt" readonly />

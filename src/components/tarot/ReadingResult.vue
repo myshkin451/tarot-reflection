@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import CardFace from "./CardFace.vue";
 import PromptBuilder from "./PromptBuilder.vue";
-import { list, text } from "@/lib/locale";
+import { buildReadingInsight } from "@/lib/interpretation";
+import { text } from "@/lib/locale";
 import { readingToMarkdown } from "@/lib/promptBuilder";
 import type { Locale, ReadingSession } from "@/lib/types";
 
@@ -14,6 +16,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   save: [];
 }>();
+
+const insight = computed(() => buildReadingInsight(props.session, props.locale));
 
 function exportMarkdown() {
   const blob = new Blob([readingToMarkdown(props.session, props.locale)], { type: "text/markdown;charset=utf-8" });
@@ -47,27 +51,55 @@ function exportMarkdown() {
 
     <div class="drawn-grid" :class="`count-${session.cards.length}`">
       <CardFace
-        v-for="drawn in session.cards"
+        v-for="(drawn, index) in session.cards"
         :key="`${drawn.position.id}-${drawn.card.id}`"
         :card="drawn.card"
         :locale="locale"
         :orientation="drawn.orientation"
         :position="text(drawn.position.name, locale)"
+        reveal
+        :reveal-index="index"
       />
     </div>
 
-    <div class="interpretations">
-      <article v-for="drawn in session.cards" :key="drawn.card.id" class="interpretation">
+    <section class="reading-insight" aria-labelledby="insight-title">
+      <div class="insight-lead">
+        <span>{{ insight.label }}</span>
+        <h3 id="insight-title">{{ insight.title }}</h3>
+        <p>{{ insight.overview }}</p>
+      </div>
+      <div class="insight-grid">
         <div>
-          <span>{{ text(drawn.position.name, locale) }}</span>
-          <h3>{{ text(drawn.card.name, locale) }}</h3>
+          <span>{{ locale === "zh-CN" ? "牌面结构" : "Pattern" }}</span>
+          <p>{{ insight.pattern }}</p>
         </div>
-        <p class="meaning">{{ text(drawn.card.meaning[drawn.orientation], locale) }}</p>
-        <p>{{ text(drawn.position.prompt, locale) }}</p>
+        <div>
+          <span>{{ locale === "zh-CN" ? "下一步" : "Next step" }}</span>
+          <p>{{ insight.nextStep }}</p>
+        </div>
+      </div>
+      <div class="question-list">
+        <span>{{ locale === "zh-CN" ? "继续书写" : "Journal with" }}</span>
+        <ol>
+          <li v-for="question in insight.questions" :key="question">{{ question }}</li>
+        </ol>
+      </div>
+    </section>
+
+    <div class="interpretations">
+      <article v-for="note in insight.cardNotes" :key="`${note.drawn.position.id}-${note.drawn.card.id}`" class="interpretation">
+        <div>
+          <span>{{ note.positionName }} · {{ note.orientationLabel }}</span>
+          <h3>{{ note.cardName }}</h3>
+        </div>
+        <p class="meaning">{{ note.meaning }}</p>
+        <p>{{ note.positionRead }}</p>
+        <p class="advice">{{ locale === "zh-CN" ? "建议：" : "Advice: " }}{{ note.advice }}</p>
         <div class="keywords">
-          <span v-for="keyword in list(drawn.card.keywords[drawn.orientation], locale)" :key="keyword">{{ keyword }}</span>
+          <span v-for="keyword in note.keywords" :key="keyword">{{ keyword }}</span>
         </div>
-        <p class="reflection">{{ list(drawn.card.reflection, locale)[0] }}</p>
+        <p class="shadow">{{ locale === "zh-CN" ? "需要留意：" : "Watch for: " }}{{ note.shadow }}</p>
+        <p class="reflection">{{ note.reflection }}</p>
       </article>
     </div>
 
@@ -149,6 +181,62 @@ button {
   max-width: 280px;
 }
 
+.reading-insight {
+  display: grid;
+  gap: 20px;
+  border-block: 1px solid rgba(32, 24, 15, 0.14);
+  padding: 24px 0;
+}
+
+.insight-lead {
+  display: grid;
+  gap: 10px;
+  max-width: 880px;
+}
+
+.insight-lead > span,
+.insight-grid span,
+.question-list > span {
+  color: rgba(151, 89, 52, 0.82);
+  font: 850 11px/1 var(--font-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.insight-lead p,
+.insight-grid p,
+.question-list li {
+  margin: 0;
+  color: rgba(32, 24, 15, 0.76);
+  font: 500 15px/1.62 var(--font-ui);
+}
+
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(32, 24, 15, 0.12);
+}
+
+.insight-grid > div {
+  display: grid;
+  gap: 9px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.question-list {
+  display: grid;
+  gap: 12px;
+}
+
+.question-list ol {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding-left: 22px;
+}
+
 .interpretations {
   display: grid;
   gap: 14px;
@@ -180,6 +268,15 @@ button {
   font-weight: 650;
 }
 
+.interpretation .advice {
+  color: rgba(32, 24, 15, 0.84);
+  font-weight: 650;
+}
+
+.interpretation .shadow {
+  color: rgba(83, 49, 31, 0.76);
+}
+
 .keywords {
   display: flex;
   flex-wrap: wrap;
@@ -204,6 +301,10 @@ button {
 @media (max-width: 700px) {
   .result-heading {
     display: grid;
+  }
+
+  .insight-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

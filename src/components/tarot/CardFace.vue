@@ -8,11 +8,17 @@ const props = defineProps<{
   orientation?: "upright" | "reversed";
   position?: string;
   compact?: boolean;
+  reveal?: boolean;
+  revealIndex?: number;
 }>();
 </script>
 
 <template>
-  <article class="tarot-card" :class="{ reversed: orientation === 'reversed', compact }">
+  <article
+    class="tarot-card"
+    :class="{ reversed: orientation === 'reversed', compact, reveal }"
+    :style="reveal ? { '--reveal-delay': `${(revealIndex ?? 0) * 120}ms` } : undefined"
+  >
     <div class="card-frame">
       <div class="card-corner">{{ card.symbol }}</div>
       <div class="card-orbit" aria-hidden="true">
@@ -37,6 +43,7 @@ const props = defineProps<{
 
 <style scoped>
 .tarot-card {
+  --reveal-delay: 0ms;
   width: 100%;
   aspect-ratio: 2 / 3.18;
   min-height: 224px;
@@ -72,6 +79,11 @@ const props = defineProps<{
   border-color: rgba(248, 240, 222, 0.86);
   box-shadow: 0 28px 80px rgba(0, 0, 0, 0.5);
   transform: translateY(-3px);
+}
+
+.tarot-card.reveal .card-frame {
+  animation: card-deal 680ms cubic-bezier(0.2, 0.8, 0.18, 1) both;
+  animation-delay: var(--reveal-delay);
 }
 
 .tarot-card.reversed .card-frame {
@@ -163,5 +175,23 @@ const props = defineProps<{
   padding-top: 5px;
   color: rgba(248, 240, 222, 0.68);
   font: 500 11px/1 var(--font-ui);
+}
+
+@keyframes card-deal {
+  from {
+    opacity: 0;
+    transform: translateY(32px) rotateY(72deg) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarot-card.reveal .card-frame {
+    animation: none;
+  }
 }
 </style>

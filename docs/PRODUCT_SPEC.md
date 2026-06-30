@@ -4,7 +4,7 @@
 
 Arcana Mirror is a calm tarot-based self-reflection tool. It should feel like a thoughtful writing and interpretation surface, not a cheap fortune-telling page.
 
-The first version is intentionally static. It does not need an AI backend to be useful because its core value is structuring the user's question, cards, positions, keywords, and interpretation requirements into a reusable prompt.
+The first version is intentionally static. It does not need an AI backend to be useful because its core value is giving a local first-pass interpretation, then packaging the user's question, cards, positions, keywords, and interpretation requirements into a reusable prompt.
 
 ## Audience
 
@@ -20,6 +20,7 @@ The first version is intentionally static. It does not need an AI backend to be 
 - Toggle reversed cards
 - Draw cards without duplicates
 - Display card positions, names, orientations, keywords, meanings, advice, and reflection questions
+- Display a local reading summary with an overall theme, pattern notes, next step, and journaling questions
 - Generate an AI prompt in English or Simplified Chinese
 - Copy or download the prompt
 - Save a reading to local journal storage
@@ -53,6 +54,7 @@ The first version is intentionally static. It does not need an AI backend to be 
 - GitHub Pages workflow can publish the static site
 - The app can draw one, three, and five card readings
 - Prompt Builder includes the question, spread, every drawn card, position, orientation, keywords, meanings, and safety boundary
+- Prompt Builder includes the local first-pass interpretation so external AI starts from richer context
 - Journal can save and display readings locally
 - `/cards` displays all 78 cards
 - English and Simplified Chinese UI are both usable

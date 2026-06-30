@@ -2,7 +2,7 @@
 
 ## Tarot Text
 
-The card meanings in `src/data/tarotCards.ts` are concise original project text. They are not copied from commercial tarot websites.
+The card meanings in `src/data/tarotCards.ts` are original project text. They are not copied from commercial tarot websites.
 
 Major Arcana entries are individually written. Minor Arcana entries are generated from maintainable suit and rank templates so the dataset remains complete and consistent.
 
@@ -14,7 +14,7 @@ This avoids deck image licensing ambiguity and gives the product a more distinct
 
 ## Interpretation Style
 
-The app should use reflective language:
+The local first-pass interpretation should work before any AI request. It should use reflective language:
 
 - "may suggest"
 - "invites reflection"
@@ -36,9 +36,10 @@ Prompt Builder includes a safety boundary:
 - Do not present the reading as fixed fate.
 - Do not give medical, legal, investment, or financial certainty.
 - Focus on reflection, perspective, and possible actions.
+- Include the local first-pass interpretation as context, but ask the model to keep it provisional rather than absolute.
 
 ## Privacy
 
 Journal entries stay in the browser through `localStorage`. There is no remote database, analytics system, account login, or server-side reading storage in v1.
 
-If a future backend is added, the privacy model should be updated before deployment.
+If a future backend is added, the privacy model should be updated before deployment. AI requests should be optional and should not replace the local interpretation fallback.

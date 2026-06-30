@@ -12,16 +12,16 @@
 
 ## V1.1 Content Polish
 
-- Improve minor card copy beyond template-generated language
+- Add local first-pass reading summary logic
 - Add position-specific interpretation helpers
-- Add more nuanced reading summary logic
+- Show advice, shadow, and journaling questions in the card library
 - Add examples for good reflective questions
 
 ## V1.2 UX Polish
 
 - Add a shareable local Markdown preview
 - Improve mobile result navigation
-- Add subtle card shuffle and reveal animation
+- Tune subtle card shuffle and reveal animation
 - Add import/export flow for journal backups
 
 ## V2 Backend-Assisted Analysis
@@ -41,6 +41,9 @@ The backend should include:
 - Abuse protection
 - Clear privacy wording
 - Optional model/provider selection
+- A local interpretation fallback when the provider fails
+
+See [AI Backend Plan](AI_BACKEND.md) for the recommended DeepSeek proxy shape.
 
 ## Possible Personal Website Integration
 

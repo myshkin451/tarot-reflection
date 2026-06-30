@@ -6,7 +6,7 @@
   },
   "hero": {
     "title": "Arcana Mirror",
-    "subtitle": "A calm tarot reflection tool for clearer questions, structured readings, and AI-ready prompts.",
+    "subtitle": "Draw a spread, get a first-pass interpretation immediately, then bring the full context to AI when you want to go deeper.",
     "start": "Start a reading"
   },
   "flow": {
@@ -16,9 +16,9 @@
     "reversed": "Allow reversed cards",
     "draw": "Draw cards",
     "redraw": "Draw again",
-    "shuffle": "Shuffle the deck",
+    "shuffle": "Shuffling",
     "summary": "Reading summary",
-    "noReading": "Enter a question or choose a spread to begin."
+    "noReading": "Write a question, choose a spread, then draw."
   },
   "result": {
     "keywords": "Keywords",
@@ -45,7 +45,7 @@
   },
   "cards": {
     "title": "Card meanings",
-    "subtitle": "Original concise meanings for reflection, not copied from commercial tarot sites.",
+    "subtitle": "Each card includes upright and reversed meanings, advice, shadow notes, and journaling questions for first-pass interpretation.",
     "upright": "Upright",
     "reversed": "Reversed"
   }

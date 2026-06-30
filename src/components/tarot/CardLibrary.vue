@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 import { tarotCards } from "@/data/tarotCards";
 import { list, text } from "@/lib/locale";
+import { sitePath } from "@/lib/paths";
 import type { Locale } from "@/lib/types";
 import CardFace from "./CardFace.vue";
 import LanguageSwitcher from "./LanguageSwitcher.vue";
@@ -14,8 +15,17 @@ const filteredCards = computed(() => {
   const needle = query.value.trim().toLowerCase();
   return tarotCards.filter((card) => {
     const matchesArcana = arcana.value === "all" || card.arcana === arcana.value;
-    const names = `${card.name.en} ${card.name.zh}`.toLowerCase();
-    return matchesArcana && (!needle || names.includes(needle));
+    const searchable = [
+      card.name.en,
+      card.name.zh,
+      ...card.keywords.upright.en,
+      ...card.keywords.upright.zh,
+      ...card.keywords.reversed.en,
+      ...card.keywords.reversed.zh
+    ]
+      .join(" ")
+      .toLowerCase();
+    return matchesArcana && (!needle || searchable.includes(needle));
   });
 });
 
@@ -30,7 +40,7 @@ onMounted(() => {
 <template>
   <div class="library-shell">
     <header class="library-header">
-      <a href="/" class="brand">Arcana Mirror</a>
+      <a :href="sitePath()" class="brand">Arcana Mirror</a>
       <LanguageSwitcher v-model:locale="locale" />
     </header>
 
@@ -38,7 +48,7 @@ onMounted(() => {
       <section class="library-title">
         <h1>{{ locale === "zh-CN" ? "牌义" : "Card Meanings" }}</h1>
         <p>
-          {{ locale === "zh-CN" ? "78 张牌的简洁结构化解释，适合抽牌、写作和 AI 提示词生成。" : "Concise structured meanings for all 78 cards, built for readings, journaling, and AI prompts." }}
+          {{ locale === "zh-CN" ? "每张牌都有正位、逆位、建议、阴影和书写问题；抽完牌后，不依赖 AI 也能先读出一层意思。" : "Each card includes upright and reversed meanings, advice, shadow notes, and journal questions for reading before AI." }}
         </p>
       </section>
 
@@ -62,14 +72,35 @@ onMounted(() => {
           <CardFace :card="card" :locale="locale" compact />
           <div class="entry-copy">
             <h2>{{ text(card.name, locale) }}</h2>
-            <p>{{ text(card.meaning.upright, locale) }}</p>
-            <dl>
+            <dl class="meaning-list">
               <div>
-                <dt>{{ locale === "zh-CN" ? "正位" : "Upright" }}</dt>
+                <dt>{{ locale === "zh-CN" ? "正位含义" : "Upright meaning" }}</dt>
+                <dd>{{ text(card.meaning.upright, locale) }}</dd>
+              </div>
+              <div>
+                <dt>{{ locale === "zh-CN" ? "逆位含义" : "Reversed meaning" }}</dt>
+                <dd>{{ text(card.meaning.reversed, locale) }}</dd>
+              </div>
+              <div>
+                <dt>{{ locale === "zh-CN" ? "建议" : "Advice" }}</dt>
+                <dd>{{ text(card.advice, locale) }}</dd>
+              </div>
+              <div>
+                <dt>{{ locale === "zh-CN" ? "阴影" : "Shadow" }}</dt>
+                <dd>{{ text(card.shadow, locale) }}</dd>
+              </div>
+              <div>
+                <dt>{{ locale === "zh-CN" ? "书写问题" : "Journal question" }}</dt>
+                <dd>{{ list(card.reflection, locale)[0] }}</dd>
+              </div>
+            </dl>
+            <dl class="keyword-list">
+              <div>
+                <dt>{{ locale === "zh-CN" ? "正位关键词" : "Upright keywords" }}</dt>
                 <dd>{{ list(card.keywords.upright, locale).join(" / ") }}</dd>
               </div>
               <div>
-                <dt>{{ locale === "zh-CN" ? "逆位" : "Reversed" }}</dt>
+                <dt>{{ locale === "zh-CN" ? "逆位关键词" : "Reversed keywords" }}</dt>
                 <dd>{{ list(card.keywords.reversed, locale).join(" / ") }}</dd>
               </div>
             </dl>
@@ -172,13 +203,13 @@ button.active {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
   gap: 18px;
 }
 
 .card-entry {
   display: grid;
-  grid-template-columns: 120px 1fr;
+  grid-template-columns: 118px 1fr;
   gap: 16px;
   border: 1px solid rgba(239, 226, 199, 0.12);
   padding: 14px;
@@ -191,7 +222,7 @@ button.active {
 
 .entry-copy {
   display: grid;
-  gap: 12px;
+  gap: 14px;
   align-content: start;
 }
 
@@ -200,7 +231,6 @@ h2 {
   font: 650 28px/1 var(--font-display);
 }
 
-.entry-copy p,
 dd {
   color: rgba(248, 240, 222, 0.64);
   font: 500 13px/1.45 var(--font-ui);
@@ -208,13 +238,22 @@ dd {
 
 dl {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 dt {
   margin-bottom: 4px;
   color: rgba(216, 179, 111, 0.86);
   font: 800 11px/1 var(--font-ui);
+}
+
+.keyword-list {
+  border-top: 1px solid rgba(239, 226, 199, 0.1);
+  padding-top: 12px;
+}
+
+.keyword-list dd {
+  color: rgba(248, 240, 222, 0.54);
 }
 
 @media (max-width: 720px) {

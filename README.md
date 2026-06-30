@@ -1,6 +1,6 @@
 # Arcana Mirror
 
-Arcana Mirror is a static-first tarot reflection app. It draws cards, explains the reading in a structured way, saves local journal entries, and generates high-quality prompts that can be copied into ChatGPT, Claude, Gemini, DeepSeek, or another AI tool.
+Arcana Mirror is a static-first tarot reflection app. It draws cards, gives an immediate local first-pass interpretation, saves local journal entries, and generates high-quality prompts that can be copied into ChatGPT, Claude, Gemini, DeepSeek, or another AI tool.
 
 It is not positioned as deterministic fortune telling. The product goal is quieter and more useful: help a person clarify a question, notice patterns, write reflections, and prepare context for deeper AI-assisted interpretation.
 
@@ -17,9 +17,11 @@ https://myshkin451.github.io/tarot-reflection/
 - One-card, three-card, and five-card spreads
 - Optional reversed cards
 - No duplicate cards in one reading
-- 78-card structured tarot dataset
+- 78-card structured tarot dataset with upright, reversed, advice, shadow, and journal prompts
+- Local first-pass reading interpretation before any AI step
 - English and Simplified Chinese UI
 - CSS/SVG-style card faces, no copyrighted tarot image dependency
+- Shuffle and reveal motion for the draw flow
 - AI Prompt Builder with compact and deep-analysis prompts
 - Copy prompt and download Markdown
 - Local journal powered by `localStorage`
@@ -79,6 +81,7 @@ docs/                 product, architecture, deployment, content, roadmap docs
 - [Architecture](docs/ARCHITECTURE.md)
 - [Deployment](docs/DEPLOYMENT.md)
 - [Content And Safety](docs/CONTENT_AND_SAFETY.md)
+- [AI Backend Plan](docs/AI_BACKEND.md)
 - [Roadmap](docs/ROADMAP.md)
 
 ## Deployment

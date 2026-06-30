@@ -33,6 +33,7 @@ describe("buildPrompt", () => {
     });
 
     expect(prompt).toContain("Should I keep building this project?");
+    expect(prompt).toContain("First-pass local interpretation");
     for (const drawn of cards) {
       expect(prompt).toContain(drawn.card.name.en);
       expect(prompt).toContain(drawn.position.name.en);
