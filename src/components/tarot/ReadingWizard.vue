@@ -53,6 +53,10 @@ let timers: number[] = [];
 let motionQuery: MediaQueryList | null = null;
 let aiController: AbortController | null = null;
 
+const assetUrl = (asset: string | { src: string }) => (typeof asset === "string" ? asset : asset.src);
+const tabletopBgUrl = assetUrl(tabletopBg);
+const manuscriptPanelUrl = assetUrl(manuscriptPanel);
+
 const selectedSpread = computed(() => getSpread(selectedSpreadId.value));
 const displaySession = computed(() => pendingSession.value ?? session.value);
 const tableDraws = computed(() => displaySession.value?.cards ?? []);
@@ -199,12 +203,12 @@ const primaryCardTitle = computed(() => {
 });
 
 const tableStyle = computed(() => ({
-  "--tabletop-bg": `url(${tabletopBg})`,
+  "--tabletop-bg": `url(${tabletopBgUrl})`,
   "--deck-back-image": `url(${deckBack.image})`
 }));
 
 const manuscriptStyle = computed(() => ({
-  "--manuscript-bg": `url(${manuscriptPanel})`
+  "--manuscript-bg": `url(${manuscriptPanelUrl})`
 }));
 
 const slotStyles = computed(() => {
