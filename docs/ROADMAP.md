@@ -57,7 +57,18 @@ Status as of 2026-07-01: the Cloudflare Worker endpoint is deployed, the GitHub 
 
 See [AI Backend Plan](AI_BACKEND.md) for the recommended DeepSeek proxy shape.
 
-## V1.4 Deck Expansion And Operations
+## V1.4 Immersive Tabletop Rebuild
+
+- Replace the page-like reading layout with an immersive tabletop application surface
+- Use generated raster assets for the dark celestial table and parchment manuscript frame
+- Keep all live UI text, controls, tabs, buttons, readings, and journal actions code-native
+- Preserve the locked random draw boundary: the cards are selected before shuffle/cut/deal animation begins
+- Keep the right-side manuscript as the home for local reading, AI deep reading, journal, save, and export
+- Translate mobile into table-first interaction plus a bottom manuscript drawer, not a squeezed desktop layout
+
+Status as of 2026-07-01: V1.4 is implemented in the main reading screen. Desktop uses a black-gold top bar, left ritual toolbar, central celestial table, bottom ritual rail, and right parchment manuscript panel. Mobile uses compact setup controls, smaller table cards, fixed bottom navigation, and a manuscript drawer. Chrome extension desktop QA and headless Chrome mobile QA passed with no horizontal overflow.
+
+## V1.5 Deck Expansion And Operations
 
 - Refine the code-native suit/rank system for minor arcana after real use
 - Decide later whether all 56 minor arcana need full illustrations

@@ -14,7 +14,7 @@ https://myshkin451.github.io/tarot-reflection/
 
 ## Current Status
 
-As of 2026-07-01, the public GitHub Pages build is connected to the Cloudflare Worker AI reading endpoint. The original deck has finished artwork for all 22 major-arcana cards, and minor-arcana cards now use a code-native Arcana Mirror suit/rank visual system while full illustrated minor cards remain a later expansion option.
+As of 2026-07-01, the public GitHub Pages build is connected to the Cloudflare Worker AI reading endpoint. The original deck has finished artwork for all 22 major-arcana cards, minor-arcana cards use a code-native Arcana Mirror suit/rank visual system, and the primary reading surface has been rebuilt as an immersive tabletop with generated table and manuscript assets.
 
 ## Features
 
@@ -26,6 +26,9 @@ As of 2026-07-01, the public GitHub Pages build is connected to the Cloudflare W
 - English and Simplified Chinese UI
 - Original Arcana Mirror Deck with a formal card back, 22 major-arcana card faces, and a four-suit code-native minor-arcana face system
 - Table-style ritual draw flow with shuffle, cut, deal, and per-card reveal states
+- Immersive black-gold tabletop UI with generated desk, celestial mat, and parchment manuscript assets
+- Desktop layout with left ritual toolbar, central card table, bottom ritual rail, and right manuscript panel
+- Mobile layout with table-first reading surface, compact controls, bottom navigation, and manuscript drawer behavior
 - AI Prompt Builder with compact and deep-analysis prompts
 - Optional Cloudflare Worker + DeepSeek direct AI reading flow
 - Streaming AI reading endpoint for progressive output
@@ -72,6 +75,7 @@ npm run preview
 
 ```text
 src/
+  assets/interface/  generated tabletop and manuscript UI assets
   assets/decks/      original deck artwork and manifests
   components/tarot/   Vue UI components
   data/               tarot card and spread data

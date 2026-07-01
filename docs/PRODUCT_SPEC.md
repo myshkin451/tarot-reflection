@@ -50,6 +50,17 @@ The next version should add direct AI interpretation without turning the app int
 - Add a code-native minor-arcana face system for all 56 minor cards, with distinct suit palettes, pip layouts, and court-card sigils
 - Present AI output as a deeper reading journal, not as a generic chatbot panel
 
+## V1.4 Scope
+
+- Rebuild the first screen as the actual reading table, not a page wrapped around a future tool
+- Use a generated dark tabletop background and generated parchment/leather manuscript frame as stable project assets
+- Keep app UI text, tabs, buttons, card names, readings, journal entries, and export actions as code-native HTML
+- Present desktop as a three-region product surface: ritual toolbar, central card table, and manuscript panel
+- Present mobile as a table-first surface with compact setup controls, bottom navigation, and an upward manuscript drawer
+- Preserve the ritual state machine: question, shuffle, cut, reveal, and read
+- Do not let animation, question wording, or pointer timing influence the already locked random draw
+- Keep local interpretation visible before AI and make AI feel like a deeper manuscript layer
+
 ## Non-Goals In V1
 
 - No browser-side provider keys
@@ -68,6 +79,7 @@ The next version should add direct AI interpretation without turning the app int
 - Original Arcana Mirror deck language, starting with card backs and major-arcana samples
 - Tactile paper, engraved linework, quiet texture, and visible card depth
 - More dramatic shuffle/deal/flip motion when drawing cards
+- Immersive tabletop atmosphere using real raster assets for the table and manuscript, not generic gradients or placeholder cards
 - User participation through ritual controls without implying that mouse movement, shuffle duration, or question wording changes the already locked random draw
 - Responsive mobile-first layout
 
@@ -88,3 +100,4 @@ Avoid developer-facing product language in the UI. The interface should say "dra
 - Minor-arcana cards display usable Arcana Mirror system faces
 - English and Simplified Chinese UI are both usable
 - Five-card readings fit desktop and mobile viewports without horizontal overflow
+- Desktop and mobile screenshots show a complete tabletop/manuscript experience, not a normal form page with decorative styling

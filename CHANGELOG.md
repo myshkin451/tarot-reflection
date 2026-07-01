@@ -20,6 +20,11 @@
 - Updated card rendering so true card assets stay highest priority, minor cards use the new system face, and face-down table cards use the formal card back.
 - Refined the AI reading surface into a parchment journal style, added request abort handling, preserved partial streamed output on errors, and sync saved readings after AI responses.
 - Verified V1.3 in local production preview with desktop and mobile screenshots, five-card interaction, no horizontal overflow, and no runtime errors.
+- Rebuilt the primary reading screen as a V1.4 immersive tabletop app surface with a black-gold top bar, left ritual toolbar, central celestial card table, bottom ritual rail, and right manuscript panel.
+- Added generated project-bound interface assets for the dark tarot tabletop background and blank parchment/leather manuscript frame.
+- Moved setup, reveal, local interpretation, AI deep reading, journal, save, and export into a single tabletop-and-manuscript workflow while preserving the locked random draw boundary.
+- Added mobile-specific tabletop behavior with compact setup controls, smaller reading cards, a fixed bottom navigation bar, and a manuscript drawer that rises into the reading surface.
+- Verified V1.4 with Chrome extension desktop QA plus independent headless Chrome mobile screenshots, five-card completion, no horizontal overflow, and successful production build.
 
 ## 0.1.0
 
