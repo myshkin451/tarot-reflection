@@ -25,6 +25,7 @@
 - Moved setup, reveal, local interpretation, AI deep reading, journal, save, and export into a single tabletop-and-manuscript workflow while preserving the locked random draw boundary.
 - Added mobile-specific tabletop behavior with compact setup controls, smaller reading cards, a fixed bottom navigation bar, and a manuscript drawer that rises into the reading surface.
 - Verified V1.4 with Chrome extension desktop QA plus independent headless Chrome mobile screenshots, five-card completion, no horizontal overflow, and successful production build.
+- Patched the V1.4 tabletop UI with native Chinese font stacks, explicit question switching, non-overlapping deck placement, tucked post-deal deck state, and reveal behavior that no longer replays the shuffle curtain.
 
 ## 0.1.0
 

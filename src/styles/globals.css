@@ -4,8 +4,10 @@
 
 :root {
   color-scheme: dark;
-  --font-display: "Cormorant Garamond", "Times New Roman", serif;
-  --font-ui: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", Palatino, "Songti SC", STSong, "Noto Serif CJK SC", serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+  --font-zh-display: "Songti SC", STSong, "Noto Serif CJK SC", "Source Han Serif SC", serif;
+  --font-zh-ui: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif;
   --ink: #0b0b0d;
   --parchment: #efe2c7;
   --vellum: #f8f0de;

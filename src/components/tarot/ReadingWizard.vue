@@ -47,7 +47,7 @@ const aiError = ref("");
 const aiRemaining = ref<number | undefined>(undefined);
 const deckBack = getDeckBackAsset();
 const aiEndpointEnabled = Boolean(getAiReadingEndpoint());
-const shuffleCards = Array.from({ length: 13 }, (_, index) => index);
+const shuffleCards = Array.from({ length: 5 }, (_, index) => index);
 let drawToken = 0;
 let timers: number[] = [];
 let motionQuery: MediaQueryList | null = null;
@@ -62,6 +62,7 @@ const displaySession = computed(() => pendingSession.value ?? session.value);
 const tableDraws = computed(() => displaySession.value?.cards ?? []);
 const spreadCount = computed(() => selectedSpread.value.positions.length);
 const flowBusy = computed(() => ["shuffling", "cutting", "dealing", "revealing"].includes(flowState.value));
+const ritualMotionActive = computed(() => ["shuffling", "cutting", "dealing"].includes(flowState.value));
 const settingsLocked = computed(() => Boolean(pendingSession.value) || flowBusy.value);
 const setupCondensed = computed(() => Boolean(displaySession.value));
 const canStartReading = computed(() => !pendingSession.value && !flowBusy.value);
@@ -176,7 +177,7 @@ const flowMessage = computed(() => {
 
 const primaryActionLabel = computed(() => {
   if (pendingSession.value && flowState.value === "awaitingReveal") {
-    return locale.value === "zh-CN" ? "揭示下一张" : "Reveal next";
+    return locale.value === "zh-CN" ? "牌堆已落定" : "Deck settled";
   }
 
   if (flowBusy.value) {
@@ -414,7 +415,7 @@ function handlePrimaryAction() {
   void createReading();
 }
 
-function resetTable() {
+function resetTable(options: { clearQuestion?: boolean } = {}) {
   drawToken += 1;
   clearFlowTimers();
   pendingSession.value = null;
@@ -425,6 +426,20 @@ function resetTable() {
   saved.value = false;
   activeTab.value = "initial";
   resetAiState();
+
+  if (options.clearQuestion) {
+    question.value = "";
+  }
+}
+
+function startNewQuestion() {
+  resetTable({ clearQuestion: true });
+}
+
+function handleQuestionFocus() {
+  if (session.value) {
+    resetTable();
+  }
 }
 
 function saveCurrentReading() {
@@ -587,7 +602,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="immersive-shell" :style="tableStyle">
+  <div class="immersive-shell" :class="{ 'locale-zh': locale === 'zh-CN' }" :style="tableStyle">
     <header class="mystic-topbar">
       <div class="topbar-cluster">
         <button class="icon-button" type="button" :aria-label="locale === 'zh-CN' ? '打开菜单' : 'Open menu'">
@@ -641,10 +656,17 @@ onBeforeUnmount(() => {
         <section class="setup-card" :class="{ locked: settingsLocked, condensed: setupCondensed }" aria-labelledby="setup-title">
           <div class="setup-heading">
             <span id="setup-title">{{ locale === "zh-CN" ? "你的问题" : "Your Question" }}</span>
-            <button type="button" :disabled="settingsLocked && !session" :aria-label="locale === 'zh-CN' ? '编辑问题' : 'Edit question'" @click="setupCondensed && session ? resetTable() : undefined">✎</button>
+            <div class="setup-actions">
+              <button v-if="session" class="question-switch" type="button" @click="startNewQuestion">
+                {{ locale === "zh-CN" ? "换问题" : "New question" }}
+              </button>
+              <button v-else-if="question && !settingsLocked" class="question-switch subtle" type="button" @click="question = ''">
+                {{ locale === "zh-CN" ? "清空" : "Clear" }}
+              </button>
+            </div>
           </div>
 
-          <textarea v-model="question" :placeholder="t(locale, 'flow.questionPlaceholder')" :disabled="settingsLocked || Boolean(session)" />
+          <textarea v-model="question" :placeholder="t(locale, 'flow.questionPlaceholder')" :disabled="settingsLocked" @focus="handleQuestionFocus" />
 
           <div v-if="!setupCondensed" class="spread-palette" aria-label="Spread">
             <span>{{ t(locale, "flow.spread") }}</span>
@@ -670,12 +692,12 @@ onBeforeUnmount(() => {
         </section>
 
         <section class="table-surface" :class="[`flow-${flowState}`, `spread-${spreadCount}`]">
-          <button class="deck-stack" type="button" :disabled="!canStartReading && flowState !== 'awaitingReveal'" @click="handlePrimaryAction">
+          <button class="deck-stack" :class="{ tucked: displaySession }" type="button" :disabled="!canStartReading" @click="handlePrimaryAction">
             <span v-for="index in 12" :key="index" :style="{ '--deck-layer': index }" />
             <strong>{{ primaryActionLabel }}</strong>
           </button>
 
-          <div v-if="flowBusy" class="ritual-motion" aria-live="polite">
+          <div v-if="ritualMotionActive" class="ritual-motion" aria-live="polite">
             <span
               v-for="index in shuffleCards"
               :key="index"
@@ -758,7 +780,7 @@ onBeforeUnmount(() => {
             </template>
           </div>
 
-          <div v-if="flowState !== 'idle' && flowState !== 'complete'" class="table-status">
+          <div v-if="ritualMotionActive" class="table-status">
             <span>{{ text(selectedSpread.name, locale) }}</span>
             <strong>{{ primaryCardTitle }}</strong>
             <p>{{ flowMessage }}</p>
@@ -992,6 +1014,11 @@ onBeforeUnmount(() => {
     linear-gradient(180deg, #050505, #0a0908 60%, #050505);
 }
 
+.immersive-shell.locale-zh {
+  --font-display: var(--font-zh-display);
+  --font-ui: var(--font-zh-ui);
+}
+
 button,
 a,
 textarea {
@@ -1058,7 +1085,7 @@ a {
 }
 
 .brand-title strong {
-  font: 650 clamp(32px, 3.2vw, 48px) / 0.95 var(--font-display);
+  font: 650 clamp(30px, 2.7vw, 42px) / 1.12 var(--font-display);
 }
 
 .brand-title span {
@@ -1151,13 +1178,13 @@ a {
 .setup-card {
   position: absolute;
   z-index: 3;
-  top: clamp(18px, 2vw, 30px);
-  left: clamp(18px, 2vw, 30px);
+  top: clamp(18px, 2.4vh, 30px);
+  left: clamp(24px, 3vw, 54px);
   display: grid;
-  gap: 14px;
-  width: min(330px, 32vw);
+  gap: 12px;
+  width: min(420px, 30vw);
   border: 1px solid rgba(185, 138, 75, 0.52);
-  padding: 18px;
+  padding: 16px;
   background:
     linear-gradient(145deg, rgba(13, 11, 9, 0.94), rgba(13, 11, 9, 0.76)),
     rgba(0, 0, 0, 0.68);
@@ -1167,14 +1194,15 @@ a {
 
 .setup-card.locked,
 .setup-card.condensed {
-  width: min(280px, 28vw);
-  opacity: 0.82;
+  width: min(300px, 24vw);
+  padding: 14px;
+  opacity: 0.9;
 }
 
 .setup-card.locked textarea,
 .setup-card.condensed textarea {
-  min-height: 46px;
-  font-size: 18px;
+  min-height: 42px;
+  font-size: 16px;
 }
 
 .setup-heading,
@@ -1186,7 +1214,33 @@ a {
   font: 750 13px/1 var(--font-ui);
 }
 
-.setup-heading button {
+.setup-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.question-switch {
+  min-height: 28px;
+  border: 1px solid rgba(224, 189, 120, 0.36);
+  padding: 0 10px;
+  color: #f4d99a;
+  background: rgba(185, 138, 75, 0.12);
+  font: 750 12px/1 var(--font-ui);
+  cursor: pointer;
+}
+
+.question-switch.subtle {
+  color: rgba(247, 234, 208, 0.7);
+  background: transparent;
+}
+
+.question-switch:hover {
+  border-color: rgba(244, 217, 154, 0.72);
+  background: rgba(185, 138, 75, 0.2);
+}
+
+.setup-heading > button {
   border: 0;
   color: rgba(224, 189, 120, 0.84);
   background: transparent;
@@ -1194,14 +1248,14 @@ a {
 }
 
 .setup-card textarea {
-  min-height: 74px;
+  min-height: 62px;
   resize: vertical;
   border: 0;
   border-bottom: 1px solid rgba(185, 138, 75, 0.35);
   padding: 0 0 12px;
   color: #fbefd4;
   background: transparent;
-  font: 620 20px/1.25 var(--font-display);
+  font: 700 19px/1.36 var(--font-ui);
 }
 
 .setup-card textarea::placeholder {
@@ -1215,15 +1269,16 @@ a {
 
 .spread-buttons {
   display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 7px;
 }
 
 .spread-buttons button {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
+  grid-template-columns: 1fr;
+  gap: 6px;
   align-items: center;
-  min-height: 38px;
+  min-height: 58px;
   border: 1px solid rgba(185, 138, 75, 0.2);
   padding: 8px 10px;
   color: rgba(247, 234, 208, 0.7);
@@ -1240,10 +1295,13 @@ a {
 }
 
 .spread-buttons strong {
+  display: -webkit-box;
   overflow: hidden;
   font: 680 12px/1.25 var(--font-ui);
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .spread-buttons small {
@@ -1275,10 +1333,10 @@ a {
 .deck-stack {
   position: absolute;
   z-index: 4;
-  bottom: clamp(92px, 13vh, 148px);
-  left: clamp(44px, 6vw, 86px);
+  bottom: clamp(56px, 8vh, 92px);
+  left: clamp(450px, 36vw, 620px);
   display: block;
-  width: clamp(150px, 15vw, 210px);
+  width: clamp(132px, 12vw, 178px);
   aspect-ratio: 2 / 2.65;
   border: 0;
   background: transparent;
@@ -1301,12 +1359,12 @@ a {
 .deck-stack strong {
   position: absolute;
   right: -22px;
-  bottom: -42px;
+  bottom: -34px;
   left: -22px;
   color: #f7d990;
-  font: 760 12px/1 var(--font-ui);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font: 760 13px/1 var(--font-ui);
+  letter-spacing: 0.02em;
+  text-transform: none;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
 }
 
@@ -1315,6 +1373,21 @@ a {
     0 20px 62px rgba(0, 0, 0, 0.54),
     0 0 28px rgba(224, 189, 120, 0.28);
   transform: translateY(-7px) rotate(-2deg);
+}
+
+.deck-stack.tucked {
+  bottom: clamp(92px, 13vh, 132px);
+  left: clamp(44px, 5vw, 72px);
+  width: clamp(86px, 7.2vw, 112px);
+  opacity: 0.58;
+  filter: saturate(0.85);
+  pointer-events: none;
+}
+
+.deck-stack.tucked strong {
+  bottom: -28px;
+  color: rgba(247, 217, 144, 0.7);
+  font-size: 11px;
 }
 
 .ritual-motion {
@@ -1326,16 +1399,32 @@ a {
   pointer-events: none;
 }
 
+.ritual-motion::before {
+  position: absolute;
+  width: min(460px, 46vw);
+  aspect-ratio: 1;
+  border: 1px solid rgba(224, 189, 120, 0.18);
+  border-radius: 50%;
+  content: "";
+  background:
+    radial-gradient(circle, rgba(224, 189, 120, 0.14), transparent 35%),
+    conic-gradient(from 12deg, transparent, rgba(224, 189, 120, 0.2), transparent 34%, rgba(224, 189, 120, 0.14), transparent 70%);
+  filter: blur(0.2px);
+  opacity: 0.58;
+  animation: ritual-breath 2200ms ease-in-out infinite;
+}
+
 .motion-card {
   position: absolute;
-  width: clamp(104px, 9vw, 138px);
+  width: clamp(82px, 7vw, 108px);
   aspect-ratio: 2 / 3.18;
-  border: 1px solid rgba(224, 189, 120, 0.55);
+  border: 1px solid rgba(224, 189, 120, 0.36);
   background: var(--deck-back-image);
   background-size: cover;
   background-position: center;
-  box-shadow: 0 20px 54px rgba(0, 0, 0, 0.48);
-  animation: shuffle-arc 980ms cubic-bezier(0.2, 0.8, 0.22, 1) infinite;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
+  opacity: 0.5;
+  animation: shuffle-arc 1600ms cubic-bezier(0.28, 0.8, 0.24, 1) infinite;
   animation-delay: var(--motion-delay);
   transform: rotate(var(--motion-angle));
 }
@@ -1840,37 +1929,52 @@ a {
 @keyframes shuffle-arc {
   0% {
     opacity: 0;
-    transform: translate(-120px, 28px) rotate(calc(var(--motion-angle) - 28deg));
+    transform: translate(-64px, 18px) rotate(calc(var(--motion-angle) - 12deg)) scale(0.96);
   }
-  40% {
-    opacity: 1;
+  45% {
+    opacity: 0.5;
   }
   100% {
     opacity: 0;
-    transform: translate(110px, -24px) rotate(calc(var(--motion-angle) + 26deg));
+    transform: translate(64px, -16px) rotate(calc(var(--motion-angle) + 12deg)) scale(1.02);
   }
 }
 
 @keyframes cut-shift {
   0% {
-    transform: translateX(-54px) rotate(var(--motion-angle));
+    opacity: 0.28;
+    transform: translateX(-34px) rotate(var(--motion-angle));
   }
   100% {
-    transform: translateX(54px) rotate(calc(var(--motion-angle) * -1));
+    opacity: 0.5;
+    transform: translateX(34px) rotate(calc(var(--motion-angle) * -1));
   }
 }
 
 @keyframes deal-pulse {
   0% {
     opacity: 0;
-    transform: translate(-210px, 160px) rotate(-12deg) scale(0.9);
+    transform: translate(-86px, 72px) rotate(-7deg) scale(0.94);
   }
   55% {
-    opacity: 1;
+    opacity: 0.55;
   }
   100% {
     opacity: 0;
-    transform: translate(60px, -40px) rotate(8deg) scale(1.02);
+    transform: translate(34px, -22px) rotate(5deg) scale(1);
+  }
+}
+
+@keyframes ritual-breath {
+  0%,
+  100% {
+    opacity: 0.32;
+    transform: scale(0.97) rotate(0deg);
+  }
+
+  50% {
+    opacity: 0.62;
+    transform: scale(1.02) rotate(6deg);
   }
 }
 
@@ -1888,7 +1992,11 @@ a {
   }
 
   .setup-card {
-    width: min(330px, 44vw);
+    width: min(390px, 38vw);
+  }
+
+  .deck-stack {
+    left: clamp(320px, 36vw, 440px);
   }
 
   .spread-orbit {
@@ -1957,7 +2065,7 @@ a {
   .setup-card textarea {
     min-height: 42px;
     max-height: 72px;
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .table-surface {
@@ -2008,7 +2116,7 @@ a {
 
   .setup-card.condensed {
     right: auto;
-    width: min(230px, 56vw);
+    width: min(260px, 62vw);
   }
 
   .setup-card.condensed textarea {
