@@ -102,6 +102,13 @@ Checked on 2026-06-30:
 - DeepSeek should be used through a server-side key only.
 - The first AI endpoint should not require login or a database-backed user model.
 
+Updated on 2026-07-01:
+
+- The Cloudflare Worker endpoint is deployed and connected to the public GitHub Pages build.
+- The frontend prefers `/api/tarot/analyze/stream` and falls back to `/api/tarot/analyze` if streaming is unavailable.
+- D1 is configured for successful reading logs and IP/day rate-limit counters.
+- Remaining backend work is operational: budget monitoring, owner-side usage queries, clearer failure diagnostics, and periodic model/cost review.
+
 See [Next Phase Direction](NEXT_PHASE_DIRECTION.md) for the current product, visual, hosting, and cost decisions.
 
 Implementation files:

@@ -12,6 +12,10 @@ After deployment, the default GitHub Pages URL is:
 https://myshkin451.github.io/tarot-reflection/
 ```
 
+## Current Status
+
+As of 2026-07-01, the public GitHub Pages build is connected to the Cloudflare Worker AI reading endpoint. The original deck has finished artwork for all 22 major-arcana cards, while minor-arcana cards still use the code-native fallback faces until their suit/rank visual system is designed.
+
 ## Features
 
 - One-card, three-card, and five-card spreads

@@ -105,6 +105,7 @@ async function generateAiReading() {
               :locale="locale"
               :orientation="drawn.orientation"
               :position="text(drawn.position.name, locale)"
+              :compact="session.cards.length >= 5"
               reveal
               :reveal-index="index"
             />
@@ -212,7 +213,7 @@ async function generateAiReading() {
 
 .result-chamber {
   display: grid;
-  grid-template-columns: minmax(0, 1.28fr) minmax(330px, 0.72fr);
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
   gap: clamp(18px, 2.4vw, 28px);
   align-items: start;
 }
@@ -229,7 +230,7 @@ async function generateAiReading() {
   position: sticky;
   top: 84px;
   overflow: hidden;
-  min-height: clamp(560px, 66vw, 760px);
+  min-height: clamp(520px, 54vw, 680px);
   padding: clamp(20px, 3vw, 34px);
   background:
     radial-gradient(circle at 50% 48%, rgba(216, 179, 111, 0.12), transparent 30%),
@@ -243,6 +244,10 @@ async function generateAiReading() {
     48px 48px,
     48px 48px,
     auto;
+}
+
+.spread-table.count-5 {
+  min-height: clamp(520px, 46vw, 640px);
 }
 
 .spread-table::before,
@@ -317,8 +322,8 @@ h3 {
   display: grid;
   gap: clamp(14px, 2vw, 20px);
   align-items: center;
-  min-height: clamp(430px, 54vw, 610px);
-  padding-top: clamp(24px, 4vw, 48px);
+  min-height: clamp(340px, 40vw, 500px);
+  padding-top: clamp(20px, 3.2vw, 40px);
 }
 
 .drawn-constellation.count-1 {
@@ -331,7 +336,10 @@ h3 {
 }
 
 .drawn-constellation.count-5 {
-  grid-template-columns: repeat(5, minmax(112px, 1fr));
+  grid-template-columns: repeat(5, minmax(96px, 1fr));
+  gap: clamp(12px, 1.5vw, 18px);
+  align-items: end;
+  min-height: clamp(300px, 32vw, 410px);
 }
 
 .drawn-card {
@@ -348,9 +356,18 @@ h3 {
   transform: translateY(28px);
 }
 
+.drawn-constellation.count-5 .drawn-card:nth-child(even) {
+  transform: none;
+}
+
 .drawn-card :deep(.tarot-card) {
   min-height: 0;
   filter: drop-shadow(0 30px 34px rgba(0, 0, 0, 0.42));
+}
+
+.drawn-constellation.count-5 .drawn-card :deep(.tarot-card) {
+  justify-self: center;
+  max-width: 160px;
 }
 
 .drawn-card :deep(.card-frame) {
@@ -623,7 +640,7 @@ button {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1120px) {
   .result-chamber,
   .spread-meta {
     grid-template-columns: 1fr;
@@ -659,6 +676,12 @@ button {
 
   .insight-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .spread-table.count-5 {
+    min-height: auto;
   }
 }
 
