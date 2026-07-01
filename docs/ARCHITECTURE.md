@@ -12,7 +12,7 @@ Astro pages
   -> browser localStorage
 ```
 
-There is no server runtime in v1. All application state is local to the browser.
+The core app remains static-first. Reading state and the table ritual are local to the browser; the optional server surface is only for direct AI interpretation.
 
 An optional Cloudflare Worker backend can be added for direct AI readings:
 
@@ -30,11 +30,14 @@ Vue reading result
 - `src/pages/cards/index.astro`: card meaning browser
 - `src/components/tarot/ReadingWizard.vue`: main reading workflow
 - `src/components/tarot/ReadingResult.vue`: result display and actions
+- `src/components/tarot/CardFace.vue`: unified card rendering entry for image cards, face-down cards, and system faces
+- `src/components/tarot/MinorCardFace.vue`: code-native minor-arcana system face
 - `src/components/tarot/PromptBuilder.vue`: prompt generation UI
 - `src/components/tarot/JournalPanel.vue`: local journal
 - `src/data/tarotCards.ts`: full 78-card dataset
 - `src/data/spreads.ts`: supported spreads and positions
 - `src/lib/draw.ts`: random drawing logic
+- `src/lib/minorVisuals.ts`: pure suit/rank visual mapping for minor arcana
 - `src/lib/interpretation.ts`: local card reading interpretation
 - `src/lib/promptBuilder.ts`: prompt and Markdown export logic
 - `src/lib/aiReading.ts`: optional AI reading request payload and client
@@ -58,6 +61,8 @@ The UI should read display text through `src/lib/locale.ts` and `src/lib/i18n.ts
 ## Randomness
 
 `src/lib/draw.ts` uses `crypto.getRandomValues` when available and falls back to `Math.random`. Draws are made from a copied deck pool, so a reading cannot contain duplicate cards.
+
+The V1.3 table ritual deliberately keeps randomness and presentation separate. `ReadingWizard.vue` locks the `ReadingSession` before the shuffle/cut/deal animation starts; later user actions reveal cards and control pacing, but they do not change the already drawn cards.
 
 ## Storage
 

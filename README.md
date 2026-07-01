@@ -14,7 +14,7 @@ https://myshkin451.github.io/tarot-reflection/
 
 ## Current Status
 
-As of 2026-07-01, the public GitHub Pages build is connected to the Cloudflare Worker AI reading endpoint. The original deck has finished artwork for all 22 major-arcana cards, while minor-arcana cards still use the code-native fallback faces until their suit/rank visual system is designed.
+As of 2026-07-01, the public GitHub Pages build is connected to the Cloudflare Worker AI reading endpoint. The original deck has finished artwork for all 22 major-arcana cards, and minor-arcana cards now use a code-native Arcana Mirror suit/rank visual system while full illustrated minor cards remain a later expansion option.
 
 ## Features
 
@@ -24,11 +24,12 @@ As of 2026-07-01, the public GitHub Pages build is connected to the Cloudflare W
 - 78-card structured tarot dataset with upright, reversed, advice, and shadow notes
 - Local card reading before any AI step
 - English and Simplified Chinese UI
-- Original Arcana Mirror Deck with a formal card back, 22 major-arcana card faces, and CSS fallback for minor arcana
-- Shuffle and reveal motion for the draw flow
+- Original Arcana Mirror Deck with a formal card back, 22 major-arcana card faces, and a four-suit code-native minor-arcana face system
+- Table-style ritual draw flow with shuffle, cut, deal, and per-card reveal states
 - AI Prompt Builder with compact and deep-analysis prompts
 - Optional Cloudflare Worker + DeepSeek direct AI reading flow
 - Streaming AI reading endpoint for progressive output
+- Parchment-style AI reading surface with abort-safe streaming and saved-journal sync
 - Copy prompt and download Markdown
 - Local journal powered by `localStorage`
 - Export saved readings as JSON or Markdown

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 import CardFace from "./CardFace.vue";
 import PromptBuilder from "./PromptBuilder.vue";
 import { AiReadingRequestError, getAiReadingEndpoint, requestAiReading, requestAiReadingStream } from "@/lib/aiReading";
@@ -27,6 +27,7 @@ const aiResponse = ref(props.session.aiResponse ?? "");
 const aiError = ref("");
 const aiRemaining = ref<number | undefined>(undefined);
 const aiResponseHtml = computed(() => renderSafeMarkdown(aiResponse.value));
+let aiController: AbortController | null = null;
 
 function exportMarkdown() {
   const blob = new Blob([readingToMarkdown(props.session, props.locale)], { type: "text/markdown;charset=utf-8" });
@@ -43,12 +44,15 @@ async function generateAiReading() {
     return;
   }
 
+  aiController?.abort();
+  aiController = new AbortController();
   aiLoading.value = true;
   aiError.value = "";
   aiResponse.value = "";
 
   try {
     const result = await requestAiReadingStream(props.session, props.locale, {
+      signal: aiController.signal,
       onMeta(meta) {
         aiRemaining.value = meta.remaining;
       },
@@ -57,7 +61,7 @@ async function generateAiReading() {
       }
     }).catch((error) => {
       if (error instanceof AiReadingRequestError && (error.status === 404 || error.status === 405)) {
-        return requestAiReading(props.session, props.locale);
+        return requestAiReading(props.session, props.locale, { signal: aiController?.signal });
       }
 
       throw error;
@@ -67,6 +71,10 @@ async function generateAiReading() {
     aiRemaining.value = result.remaining;
     emit("aiResponse", result.response);
   } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      return;
+    }
+
     const message = error instanceof Error ? error.message : "";
     const limited = message.includes("limit") || message.includes("次数") || message.includes("429");
 
@@ -79,8 +87,25 @@ async function generateAiReading() {
         : "This reading could not be generated. Try again later, or use the prompt below.";
   } finally {
     aiLoading.value = false;
+    aiController = null;
   }
 }
+
+watch(
+  () => props.session.id,
+  () => {
+    aiController?.abort();
+    aiController = null;
+    aiLoading.value = false;
+    aiError.value = "";
+    aiRemaining.value = undefined;
+    aiResponse.value = props.session.aiResponse ?? "";
+  }
+);
+
+onBeforeUnmount(() => {
+  aiController?.abort();
+});
 </script>
 
 <template>
@@ -163,7 +188,7 @@ async function generateAiReading() {
       </article>
     </section>
 
-    <section v-if="aiEnabled || aiResponse || aiError" class="ai-reading" aria-labelledby="ai-reading-title">
+    <section v-if="aiEnabled || aiResponse || aiError" class="ai-reading" :class="{ writing: aiLoading && aiResponse }" aria-labelledby="ai-reading-title">
       <div class="ai-reading-heading">
         <div>
           <span>{{ locale === "zh-CN" ? "AI 解读" : "AI reading" }}</span>
@@ -191,8 +216,8 @@ async function generateAiReading() {
       </p>
 
       <div v-if="aiResponse" class="ai-reading-body" v-html="aiResponseHtml" />
-      <p v-else-if="aiError" class="ai-reading-error">{{ aiError }}</p>
-      <p v-else class="ai-reading-empty">
+      <p v-if="aiError" class="ai-reading-error">{{ aiError }}</p>
+      <p v-if="!aiResponse && !aiError" class="ai-reading-empty">
         {{ locale === "zh-CN" ? "根据当前问题和牌面生成一段完整读牌。" : "Generate a fuller reading from the current question and spread." }}
       </p>
     </section>
@@ -399,7 +424,13 @@ h3 {
   background:
     linear-gradient(110deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.1)),
     radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.24), transparent 28%),
+    linear-gradient(90deg, rgba(32, 24, 15, 0.035) 1px, transparent 1px),
     #efe2c7;
+  background-size:
+    auto,
+    auto,
+    26px 26px,
+    auto;
 }
 
 .reading-sheet {
@@ -530,16 +561,59 @@ button {
 }
 
 .ai-reading {
+  position: relative;
   display: grid;
   gap: 16px;
+  overflow: hidden;
   padding: clamp(18px, 3vw, 24px);
   color: #20180f;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(151, 89, 52, 0.08)),
+    linear-gradient(90deg, rgba(32, 24, 15, 0.045) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(32, 24, 15, 0.028) 1px, transparent 1px),
+    radial-gradient(circle at 16% 12%, rgba(255, 255, 255, 0.34), transparent 25%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(151, 89, 52, 0.08)),
     #efe2c7;
+  background-size:
+    28px 28px,
+    28px 28px,
+    auto,
+    auto,
+    auto;
+}
+
+.ai-reading::before,
+.ai-reading::after {
+  position: absolute;
+  pointer-events: none;
+  content: "";
+}
+
+.ai-reading::before {
+  inset: 10px;
+  border: 1px solid rgba(32, 24, 15, 0.1);
+}
+
+.ai-reading::after {
+  right: 18px;
+  bottom: 18px;
+  width: 74px;
+  height: 74px;
+  border: 1px solid rgba(151, 89, 52, 0.16);
+  border-radius: 50%;
+  opacity: 0.55;
+}
+
+.ai-reading.writing .ai-reading-body::after {
+  display: inline-block;
+  width: 0.6em;
+  color: rgba(151, 89, 52, 0.8);
+  content: " |";
+  animation: ink-cursor 900ms steps(2, start) infinite;
 }
 
 .ai-reading-heading {
+  position: relative;
+  z-index: 1;
   display: flex;
   gap: 14px;
   align-items: start;
@@ -570,6 +644,8 @@ button {
 .ai-reading-meta,
 .ai-reading-empty,
 .ai-reading-error {
+  position: relative;
+  z-index: 1;
   margin: 0;
   color: rgba(32, 24, 15, 0.68);
   font: 600 13px/1.5 var(--font-ui);
@@ -580,6 +656,8 @@ button {
 }
 
 .ai-reading-body {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 12px;
   color: rgba(32, 24, 15, 0.82);
@@ -637,6 +715,18 @@ button {
   to {
     opacity: 1;
     transform: translateY(0) rotateX(0deg) scale(1);
+  }
+}
+
+@keyframes ink-cursor {
+  0%,
+  45% {
+    opacity: 1;
+  }
+
+  46%,
+  100% {
+    opacity: 0;
   }
 }
 

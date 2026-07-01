@@ -15,6 +15,11 @@
 - Confirmed the public Cloudflare Worker AI reading flow is deployed and connected to the GitHub Pages build.
 - Tightened the five-card result layout so Chinese readings keep the card table, captions, and first interpretation sheet visible without clipping.
 - Updated roadmap and next-phase docs after the AI backend and major-arcana artwork work moved past planning.
+- Upgraded the primary draw experience into a table ritual with explicit shuffle, cut, deal, awaiting-reveal, per-card reveal, and complete states.
+- Added a code-native minor-arcana visual system with four suit treatments, numeric pip layouts, and court-card sigils.
+- Updated card rendering so true card assets stay highest priority, minor cards use the new system face, and face-down table cards use the formal card back.
+- Refined the AI reading surface into a parchment journal style, added request abort handling, preserved partial streamed output on errors, and sync saved readings after AI responses.
+- Verified V1.3 in local production preview with desktop and mobile screenshots, five-card interaction, no horizontal overflow, and no runtime errors.
 
 ## 0.1.0
 

@@ -107,6 +107,9 @@ Updated on 2026-07-01:
 - The Cloudflare Worker endpoint is deployed and connected to the public GitHub Pages build.
 - The frontend prefers `/api/tarot/analyze/stream` and falls back to `/api/tarot/analyze` if streaming is unavailable.
 - D1 is configured for successful reading logs and IP/day rate-limit counters.
+- The frontend AI client now aborts in-flight requests when the reading changes or the component unmounts.
+- Partial streamed output is preserved when a later stream error occurs, so useful generated text is not hidden by the error state.
+- If a saved reading later receives an AI response, the local journal copy is updated as well.
 - Remaining backend work is operational: budget monitoring, owner-side usage queries, clearer failure diagnostics, and periodic model/cost review.
 
 See [Next Phase Direction](NEXT_PHASE_DIRECTION.md) for the current product, visual, hosting, and cost decisions.

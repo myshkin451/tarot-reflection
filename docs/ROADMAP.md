@@ -29,7 +29,7 @@
 
 Status as of 2026-06-30: the card back, draw motion, result layout, and all 22 major-arcana formal card faces are complete.
 
-Status as of 2026-07-01: the five-card Chinese result view was tightened so the spread table, captions, and first interpretation sheet stay readable on normal desktop and mobile viewports.
+Status as of 2026-07-01: the five-card Chinese result view was tightened so the spread table, captions, and first interpretation sheet stay readable on normal desktop and mobile viewports. This was followed by a V1.3 table ritual upgrade that turns the primary draw flow into explicit shuffle, cut, deal, reveal, and read states.
 
 ## V1.3 Backend-Assisted Analysis
 
@@ -57,13 +57,15 @@ Status as of 2026-07-01: the Cloudflare Worker endpoint is deployed, the GitHub 
 
 See [AI Backend Plan](AI_BACKEND.md) for the recommended DeepSeek proxy shape.
 
-## V1.4 Deck Expansion
+## V1.4 Deck Expansion And Operations
 
-- Build a code-native suit/rank system for minor arcana
+- Refine the code-native suit/rank system for minor arcana after real use
 - Decide later whether all 56 minor arcana need full illustrations
 - Keep the deck original rather than copying commercial or Rider-Waite-Smith artwork
+- Add owner-side D1 usage inspection queries or a lightweight internal usage view
+- Add explicit model budget monitoring and clearer Worker failure diagnostics
 
-Next practical product step: improve the minor-arcana fallback language and visual system before spending effort on 56 full illustrations.
+Status as of 2026-07-01: the first code-native minor-arcana face system is implemented. The next practical deck step is not generating all 56 full illustrations; it is reviewing the system cards in real readings, then deciding which Aces/court cards deserve full artwork first.
 
 ## Possible Personal Website Integration
 

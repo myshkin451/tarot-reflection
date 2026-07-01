@@ -41,6 +41,7 @@ export interface AiReadingResponse {
 export interface AiReadingStreamHandlers {
   onDelta?: (text: string) => void;
   onMeta?: (meta: Omit<AiReadingResponse, "response">) => void;
+  signal?: AbortSignal;
 }
 
 export class AiReadingRequestError extends Error {
@@ -99,7 +100,11 @@ export function buildAiReadingPayload(session: ReadingSession, locale: Locale): 
   };
 }
 
-export async function requestAiReading(session: ReadingSession, locale: Locale): Promise<AiReadingResponse> {
+export async function requestAiReading(
+  session: ReadingSession,
+  locale: Locale,
+  options: { signal?: AbortSignal } = {}
+): Promise<AiReadingResponse> {
   const endpoint = getAiReadingEndpoint();
 
   if (!endpoint) {
@@ -111,6 +116,7 @@ export async function requestAiReading(session: ReadingSession, locale: Locale):
     headers: {
       "Content-Type": "application/json"
     },
+    signal: options.signal,
     body: JSON.stringify(buildAiReadingPayload(session, locale))
   });
   const data = await response.json().catch(() => ({}));
@@ -152,7 +158,8 @@ export async function requestAiReadingStream(
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify(buildAiReadingPayload(session, locale))
+    body: JSON.stringify(buildAiReadingPayload(session, locale)),
+    signal: handlers.signal
   });
 
   if (!response.ok) {

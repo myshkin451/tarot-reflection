@@ -46,6 +46,9 @@ The next version should add direct AI interpretation without turning the app int
 - Keep frontend hosting static unless the personal website migration happens first
 - Limit each IP to 20 AI readings per day
 - Avoid login, payment, account state, and admin dashboards in the MVP
+- Upgrade the draw flow into a table ritual with locked random draw, shuffle, cut, deal, per-card reveal, and completed spread states
+- Add a code-native minor-arcana face system for all 56 minor cards, with distinct suit palettes, pip layouts, and court-card sigils
+- Present AI output as a deeper reading journal, not as a generic chatbot panel
 
 ## Non-Goals In V1
 
@@ -65,6 +68,7 @@ The next version should add direct AI interpretation without turning the app int
 - Original Arcana Mirror deck language, starting with card backs and major-arcana samples
 - Tactile paper, engraved linework, quiet texture, and visible card depth
 - More dramatic shuffle/deal/flip motion when drawing cards
+- User participation through ritual controls without implying that mouse movement, shuffle duration, or question wording changes the already locked random draw
 - Responsive mobile-first layout
 
 Avoid developer-facing product language in the UI. The interface should say "draw", "read", "generate AI reading", "save", and "ask again"; it should not explain that the design is restrained, modern, static-first, or structurally reflective.
@@ -81,5 +85,6 @@ Avoid developer-facing product language in the UI. The interface should say "dra
 - Journal can save and display readings locally
 - `/cards` displays all 78 cards
 - All 22 major-arcana cards use finished Arcana Mirror artwork
-- Minor-arcana cards continue to display usable fallback faces
+- Minor-arcana cards display usable Arcana Mirror system faces
 - English and Simplified Chinese UI are both usable
+- Five-card readings fit desktop and mobile viewports without horizontal overflow

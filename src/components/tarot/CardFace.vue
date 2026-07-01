@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { Locale, TarotCard } from "@/lib/types";
-import { getDeckCardAsset } from "@/lib/deckAssets";
+import { getDeckBackAsset, getDeckCardAsset } from "@/lib/deckAssets";
+import { isMinorCard } from "@/lib/minorVisuals";
 import { list, text } from "@/lib/locale";
+import MinorCardFace from "./MinorCardFace.vue";
 
 const props = defineProps<{
   card: TarotCard;
@@ -12,9 +14,12 @@ const props = defineProps<{
   compact?: boolean;
   reveal?: boolean;
   revealIndex?: number;
+  facedown?: boolean;
 }>();
 
 const cardAsset = computed(() => getDeckCardAsset(props.card.id));
+const deckBack = getDeckBackAsset();
+const minorFallback = computed(() => !cardAsset.value && isMinorCard(props.card));
 const cardAssetAlt = computed(() => {
   const asset = cardAsset.value;
 
@@ -29,11 +34,15 @@ const cardAssetAlt = computed(() => {
 <template>
   <article
     class="tarot-card"
-    :class="{ reversed: orientation === 'reversed', compact, reveal, 'has-art': cardAsset }"
+    :class="{ reversed: orientation === 'reversed', compact, reveal, facedown, 'has-art': cardAsset, 'minor-card': minorFallback }"
     :style="reveal ? { '--reveal-delay': `${(revealIndex ?? 0) * 120}ms` } : undefined"
   >
     <div class="card-frame">
-      <template v-if="cardAsset">
+      <template v-if="facedown">
+        <img class="card-back-art" :src="deckBack.image" :alt="locale === 'zh-CN' ? deckBack.alt.zh : deckBack.alt.en" loading="lazy" decoding="async" />
+        <div class="card-back-edge" aria-hidden="true" />
+      </template>
+      <template v-else-if="cardAsset">
         <img class="card-art" :src="cardAsset.image" :alt="cardAssetAlt" loading="lazy" decoding="async" />
         <div class="card-art-glaze" aria-hidden="true" />
         <div class="card-title-plate">
@@ -48,6 +57,9 @@ const cardAssetAlt = computed(() => {
             </span>
           </div>
         </div>
+      </template>
+      <template v-else-if="minorFallback">
+        <MinorCardFace :card="card" :locale="locale" :orientation="orientation" :position="position" :compact="compact" />
       </template>
       <template v-else>
         <div class="card-corner">{{ card.symbol }}</div>
@@ -106,7 +118,9 @@ const cardAssetAlt = computed(() => {
     box-shadow 220ms ease;
 }
 
-.tarot-card.has-art .card-frame {
+.tarot-card.has-art .card-frame,
+.tarot-card.facedown .card-frame,
+.tarot-card.minor-card .card-frame {
   display: block;
   padding: 0;
   background: #0b0a09;
@@ -122,6 +136,10 @@ const cardAssetAlt = computed(() => {
   transform: translateY(-3px);
 }
 
+.tarot-card.facedown:hover .card-frame {
+  transform: translateY(-2px) rotateX(2deg);
+}
+
 .tarot-card.reveal .card-frame {
   animation: card-deal 680ms cubic-bezier(0.2, 0.8, 0.18, 1) both;
   animation-delay: var(--reveal-delay);
@@ -132,6 +150,28 @@ const cardAssetAlt = computed(() => {
     radial-gradient(circle at 50% 68%, rgba(111, 136, 150, 0.25), transparent 32%),
     linear-gradient(25deg, rgba(239, 226, 199, 0.11), rgba(239, 226, 199, 0.03)),
     #111012;
+}
+
+.tarot-card.reversed.has-art .card-art {
+  transform: rotate(180deg) scale(1.03);
+}
+
+.card-back-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.card-back-edge {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(248, 240, 222, 0.12), transparent 12%, transparent 86%, rgba(0, 0, 0, 0.3)),
+    radial-gradient(circle at 50% 15%, rgba(248, 240, 222, 0.08), transparent 26%);
+  pointer-events: none;
 }
 
 .card-art {
